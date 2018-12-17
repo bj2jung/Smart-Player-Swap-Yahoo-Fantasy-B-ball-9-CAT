@@ -1,0 +1,44 @@
+{
+  "manifest_version": 2,
+  "name": "Fantasy Basketball Player Comparison",
+  "version": "1.0",
+  "description": "Fantasy Basketball Player Comparison",
+  "icons": {
+    "128": "icon128.png",
+    "48": "icon48.png",
+    "16": "icon16.png"
+  },
+  "page_action": {
+    "default_icon": "icon16.png",
+    "default_popup": "popup.html",
+    "default_title": "Fantasy Basketball Player Comparison"
+  },
+
+  "background": {
+    "scripts": ["eventPage.js"],
+    "persistent": false
+  },
+
+  "content_scripts": [
+    {
+      "matches": [
+        "https://basketball.fantasysports.yahoo.com/nba/*/players/*",
+        "https://basketball.fantasysports.yahoo.com/nba/*/players",
+        "https://basketball.fantasysports.yahoo.com/nba/*/players*",
+        "https://basketball.fantasysports.yahoo.com/nba/*/*"
+      ],
+      "js": ["content.js"],
+      "css": ["main.css"]
+    }
+  ],
+
+  "permissions": [
+    "tabs",
+    "https://basketball.fantasysports.yahoo.com/nba/*/players/*",
+    "https://basketball.fantasysports.yahoo.com/nba/*/players",
+    "https://basketball.fantasysports.yahoo.com/nba/*/players*",
+    "https://basketball.fantasysports.yahoo.com/nba/*/*"
+  ],
+
+  "web_accessible_resources": ["/nba-2018-schedule.csv"]
+}

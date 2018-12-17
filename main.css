@@ -1,0 +1,30 @@
+#comparisonBox {
+  display: none;
+  position: fixed;
+  z-index: 2;
+  left: 50%;
+  top: 20%;
+  bottom: 20%;
+  right: 0;
+  overflow: auto;
+  background-color: rgb(0, 0, 0);
+  background-color: rgba(0, 0, 0, 0.9);
+  color: white;
+  font-size: 15px;
+}
+
+#comparisonBoxData {
+  color: white;
+}
+
+#comparisonBox div table tbody tr th {
+  width: 6%;
+}
+
+#comparisonBox div table tbody tr #col0 {
+  width: 250px;
+}
+
+#comparisonBox div table tbody tr #col1 {
+  width: 75px;
+}
