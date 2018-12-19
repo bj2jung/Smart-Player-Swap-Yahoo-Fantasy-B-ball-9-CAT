@@ -57,7 +57,11 @@ function getTimeStampOfCurrentWeek() {
 function populateCurrentWeekGameScheduleArray(week) {
   const newGameScheduleArray = gameScheduleArray[0].map(Number);
   const indexOfMondayFirstGame = newGameScheduleArray.indexOf(week[0]);
-  const indexOfSundayLastGame = newGameScheduleArray.indexOf(week[7]) - 1;
+  let indexOfSundayLastGame = newGameScheduleArray.indexOf(week[7]) - 1;
+  if (indexOfSundayLastGame === -2) {
+    indexOfSundayLastGame =
+      newGameScheduleArray.indexOf(week[7] + 86400000) - 1; //TODO: improve this function
+  }
 
   for (i = indexOfMondayFirstGame; i <= indexOfSundayLastGame; i++) {
     currentWeekGameScheduleArray[0].push(newGameScheduleArray[i]);
@@ -252,6 +256,9 @@ function turnDataIntoHTMLTable(headingRow, tableData, tableHTMLElement) {
     let tr = document.createElement("tr");
     for (j = 0; j < tableData[i].length; j++) {
       let td = document.createElement("td");
+      td.addEventListener("click", e => {
+        populateStatChangeData(e);
+      });
       td.appendChild(document.createTextNode(tableData[i][j]));
       tr.appendChild(td);
     }
@@ -265,7 +272,7 @@ function turnDataIntoHTMLTable(headingRow, tableData, tableHTMLElement) {
 
 /* PART H: create functionality where user can toggle between the two tables */
 
-let x = 1;
+let x = 0;
 function toggleTableData() {
   if (x) {
     turnDataIntoHTMLTable(
@@ -294,7 +301,7 @@ function toggleTableData() {
 - projected stats per day https://basketball.fantasysports.yahoo.com/nba/44190/4/team?&date=2018-12-12&stat1=P&stat2=P
   */
 
-function collectStats(url) {
+function collectMyRosterStats(url) {
   return new Promise(resolve => {
     let outerArray = new Array(myRoster[0].length);
     fetch(url)
@@ -347,17 +354,120 @@ const myRosterStatsUrls = [
   "https://basketball.fantasysports.yahoo.com/nba/44190/4?stat1=AS&stat2=AL14"
 ];
 
-function updateMyRosterStatsObject() {
-  let i = 0;
-  Object.keys(myRosterStatsObject).forEach(async function(key) {
-    myRosterStatsObject[key] = await collectStats(myRosterStatsUrls[i]);
-    i++;
-  });
+async function updateMyRosterStatsObject() {
+  myRosterStatsObject.avgStatsCurrentSeason = await collectMyRosterStats(
+    myRosterStatsUrls[0]
+  );
+  myRosterStatsObject.avgStatsLastSeason = await collectMyRosterStats(
+    myRosterStatsUrls[1]
+  );
+  myRosterStatsObject.avgStats7d = await collectMyRosterStats(
+    myRosterStatsUrls[2]
+  );
+  myRosterStatsObject.avgStats14d = await collectMyRosterStats(
+    myRosterStatsUrls[3]
+  ); //TODO: improve
 }
 
 /* END OF PART I */
 
-/* PART J: populate statChangeData and create heading of statChangeTable */
+/* PART J: collect stats for targetplayer on mousehover and store data in object*/
+
+function collectTargetPlayerStats(targetPlayerTeam, url) {
+  return new Promise(resolve => {
+    let arr = [];
+
+    fetch(url)
+      .then(response => response.text())
+      .then(text => {
+        const parser = new DOMParser();
+        const htmlDocument = parser.parseFromString(text, "text/html");
+        const tableElement = htmlDocument.documentElement.querySelector(
+          "table.Table > tbody"
+        );
+        let targetPlayerRow;
+
+        for (let i = 1; i <= tableElement.querySelectorAll("tr").length; i++) {
+          if (
+            tableElement.querySelector(
+              `tr:nth-child(${i}) > td:nth-child(2) > div > div > div > div > span`
+            ).textContent == targetPlayerTeam
+          ) {
+            targetPlayerRow = tableElement.querySelector(`tr:nth-child(${i})`);
+            break;
+          }
+        }
+
+        let j = 0;
+        targetPlayerRow.querySelector("td:nth-child(10) > div > span")
+          ? (j = 0)
+          : (j = 1);
+
+        for (let i = 10 + j; i <= 12 + j; i += 2) {
+          let FGFTRecord = targetPlayerRow.querySelector(
+            `td:nth-child(${i}) > div > span`
+          );
+          arr.push(FGFTRecord.innerText);
+        }
+
+        for (let i = 14 + j; i <= 20 + j; i++) {
+          let otherStats = targetPlayerRow.querySelector(
+            `td:nth-child(${i}) > div`
+          );
+          arr.push(otherStats.innerText);
+        }
+      })
+      .then(() => resolve(arr));
+  });
+}
+
+const targetPlayerStatsObject = {
+  avgStatsCurrentSeason: null,
+  avgStatsLastSeason: null,
+  avgStats7d: null,
+  avgStats14d: null
+};
+
+async function updateTargetPlayerStatsObject(targetPlayer, targetPlayerTeam) {
+  let targetPlayerLastName = targetPlayer.split(" ")[1];
+
+  const targetPlayerStatsUrls = [
+    `https://basketball.fantasysports.yahoo.com/nba/44190/playersearch?&search=${targetPlayerLastName}&stat1=S_AS_2018&jsenabled=1`,
+    `https://basketball.fantasysports.yahoo.com/nba/44190/playersearch?&search=${targetPlayerLastName}&stat1=S_AS_2017&jsenabled=1`,
+    `https://basketball.fantasysports.yahoo.com/nba/44190/playersearch?&search=${targetPlayerLastName}&stat1=S_AL7&jsenabled=1`,
+    `https://basketball.fantasysports.yahoo.com/nba/44190/playersearch?&search=${targetPlayerLastName}&stat1=S_AL14&jsenabled=1`
+  ];
+
+  targetPlayerStatsObject.avgStatsCurrentSeason = await collectTargetPlayerStats(
+    targetPlayerTeam,
+    targetPlayerStatsUrls[0]
+  );
+  targetPlayerStatsObject.avgStatsLastSeason = await collectTargetPlayerStats(
+    targetPlayerTeam,
+    targetPlayerStatsUrls[1]
+  );
+  targetPlayerStatsObject.avgStats7d = await collectTargetPlayerStats(
+    targetPlayerTeam,
+    targetPlayerStatsUrls[2]
+  );
+  targetPlayerStatsObject.avgStats14d = await collectTargetPlayerStats(
+    targetPlayerTeam,
+    targetPlayerStatsUrls[3]
+  ); //TODO: improve
+
+  // let j = 0;
+  // Object.keys(targetPlayerStatsObject).forEach(async function(key) {
+  //   targetPlayerStatsObject[key] = await collectTargetPlayerStats(
+  //     targetPlayerTeam,
+  //     targetPlayerStatsUrls[j]
+  //   );
+  //   j++;
+  // });
+}
+
+/* END OF PART J */
+
+/* PART K: populate statChangeTable  */
 const statTableHeading = [
   "FGM/A",
   "FG%",
@@ -376,42 +486,12 @@ function calculateStatChange(changeDay) {
   /*total if players are swapped - total when player are not swapped */
 }
 
-function populateStatChangeData() {
+function populateStatChangeData(e) {
   //called by mouseclick of plusMinus
-
-  return [];
+  console.log(e.target);
+  console.log(targetPlayerStatsObject);
+  console.log(myRosterStatsObject);
 }
-
-function getTargetPlayerStats(targetPlayer, targetPlayerTeam) {
-  let targetPlayerLastName = targetPlayer.split(" ")[1];
-
-  fetch(
-    `https://basketball.fantasysports.yahoo.com/nba/44190/playersearch?&search=${targetPlayerLastName}`
-  )
-    .then(response => response.text())
-    .then(text => {
-      const parser = new DOMParser();
-      const htmlDocument = parser.parseFromString(text, "text/html");
-      const tableElement = htmlDocument.documentElement.querySelector(
-        "table.Table > tbody"
-      );
-      let targetPlayerRow;
-
-      for (let i = 1; i <= tableElement.querySelectorAll("tr").length; i++) {
-        if (
-          tableElement.querySelector(
-            `tr:nth-child(${i}) > td:nth-child(2) > div > div > div > div > span`
-          ).textContent == targetPlayerTeam
-        ) {
-          targetPlayerRow = tableElement.querySelector(`tr:nth-child(${i})`);
-          break;
-        }
-      }
-      console.log(targetPlayerRow);
-    });
-}
-
-/* END OF PART J */
 
 /*   */
 const availablePlayers = document.querySelectorAll("a.Nowrap");
@@ -454,15 +534,11 @@ for (element of availablePlayers) {
     );
     turnDataIntoHTMLTable(
       populateWeekTableHeading("My Roster"),
-      dailyMatchupTableData,
+      dailyPlusMinusTableData,
       myRosterTable
     );
-    turnDataIntoHTMLTable(
-      statTableHeading,
-      populateStatChangeData(),
-      statChangeTable
-    );
-    getTargetPlayerStats(targetPlayer, targetPlayerTeam);
+
+    updateTargetPlayerStatsObject(targetPlayer, targetPlayerTeam);
   });
 
   // element.addEventListener("mouseout", () => {
