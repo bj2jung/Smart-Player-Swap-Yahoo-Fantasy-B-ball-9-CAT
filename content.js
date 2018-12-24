@@ -33,9 +33,9 @@ function populateGameScheduleArray(arr) {
       gameScheduleArray[j].push(arr[i]);
     }
   }
-  for (i in gameScheduleArray[2]) {
-    gameScheduleArray[2][i] = gameScheduleArray[2][i].slice(0, -1);
-  }
+  // for (i in gameScheduleArray[2]) {
+  //   gameScheduleArray[2][i] = gameScheduleArray[2][i].slice(0, -1);
+  // } //TODO: if statement req'd here?
 }
 
 function getTimeStampOfCurrentWeek() {
@@ -105,10 +105,13 @@ function getMyRoster() {
 games for the week. Store all arrays in a single array myRostersGamesForCurrentWeek */
 const myRostersGamesForCurrentWeek = []; //TODO: confirm that this array is needed
 
+
+
+
 function getGamesInWeekForPlayer(team) {
   let gamesInWeek = [];
-  for (j = 1; j <= 2; j++) {
-    for (i in currentWeekGameScheduleArray[j]) {
+  for (let j = 1; j <= 2; j++) {
+    for (let i in currentWeekGameScheduleArray[j]) {
       if (team.includes(currentWeekGameScheduleArray[j][i])) {
         gamesInWeek.push(currentWeekGameScheduleArray[0][i]);
       }
@@ -119,7 +122,7 @@ function getGamesInWeekForPlayer(team) {
 
 function populateMyRostersGamesForCurrentWeek() {
   if (myRostersGamesForCurrentWeek.length == 0) {
-    for (i in myRoster[1]) {
+    for (let i in myRoster[1]) {
       myRostersGamesForCurrentWeek.push(
         getGamesInWeekForPlayer(myRoster[1][i])
       );
@@ -184,6 +187,7 @@ function populateDailyMatchupTableData() {
 
 /* PART E: Get data for targetPlayer */
 
+let targetPlayerGamesForCurrentWeek;
 let targetPlayerMatchupDataRow = [];
 function populateTargetPlayerMatchupDataRow(player, team) {
   targetPlayerMatchupDataRow[0] = populateDailyMatchupDataRow(player, team);
@@ -232,7 +236,8 @@ function populateDailyPlusMinusTableData(targetPlayerTeam) {
 
 /* END OF PART F */
 
-/* PART G: when target player name is hovered, make the dailyMatchupTableData into a html table  */
+/* PART G: when target player name is hovered, make the dailyMatchupTableData into a html table.
+Add event listener to table  */
 
 function turnDataIntoHTMLTable(headingRow, tableData, tableHTMLElement) {
   while (tableHTMLElement.hasChildNodes()) {
@@ -256,9 +261,19 @@ function turnDataIntoHTMLTable(headingRow, tableData, tableHTMLElement) {
     let tr = document.createElement("tr");
     for (j = 0; j < tableData[i].length; j++) {
       let td = document.createElement("td");
-      td.addEventListener("click", e => {
-        populateStatChangeData(e);
-      });
+      td.dayIndex = j;
+      td.playerIndex = i;
+      /* add click listener to days only AFTER current day */
+      if ((getTimeStampOfCurrentWeek()[j-2] > getTimeStampOfCurrentDay()-180000000) && (headingRow[0] == "My Roster")) {
+        td.addEventListener("click", function (e) {
+          populateStatChangeData(e);
+          updateStatChangeTable(statSelector.options[statSelector.selectedIndex].innerHTML)
+          
+        });
+
+
+
+      }
       td.appendChild(document.createTextNode(tableData[i][j]));
       tr.appendChild(td);
     }
@@ -267,6 +282,11 @@ function turnDataIntoHTMLTable(headingRow, tableData, tableHTMLElement) {
   table.appendChild(tableBody);
   tableHTMLElement.appendChild(table);
 }
+
+function getTimeStampOfCurrentDay() {
+  const date = new Date();
+  return Math.floor(date);
+} //TODO: consider time zone difference
 
 /* END OF PART G */
 
@@ -311,7 +331,6 @@ function collectMyRosterStats(url) {
         const htmlDocument = parser.parseFromString(text, "text/html");
         for (let n = 1; n <= myRoster[0].length; n++) {
           let innerArray = [];
-
           for (let i = 12; i <= 14; i += 2) {
             let FGFTRecord = htmlDocument.documentElement.querySelector(
               "#statTable0 > tbody > tr:nth-child(" +
@@ -320,7 +339,7 @@ function collectMyRosterStats(url) {
                 i +
                 ") > div > span"
             );
-            innerArray.push(FGFTRecord.innerText);
+            innerArray.push(FGFTRecord.innerText.split("/").map(k => Number(k)));
           }
 
           for (let i = 16; i <= 22; i++) {
@@ -331,7 +350,7 @@ function collectMyRosterStats(url) {
                 i +
                 ") > div"
             );
-            innerArray.push(otherStats.innerText);
+            innerArray.push(Number(otherStats.innerText));
           }
           outerArray[n - 1] = innerArray;
         }
@@ -407,14 +426,14 @@ function collectTargetPlayerStats(targetPlayerTeam, url) {
           let FGFTRecord = targetPlayerRow.querySelector(
             `td:nth-child(${i}) > div > span`
           );
-          arr.push(FGFTRecord.innerText);
+          arr.push(FGFTRecord.innerText.split("/").map(k => Number(k)));
         }
 
         for (let i = 14 + j; i <= 20 + j; i++) {
           let otherStats = targetPlayerRow.querySelector(
             `td:nth-child(${i}) > div`
           );
-          arr.push(otherStats.innerText);
+          arr.push(Number(otherStats.innerText));
         }
       })
       .then(() => resolve(arr));
@@ -482,16 +501,52 @@ const statTableHeading = [
   "TO"
 ];
 
-function calculateStatChange(changeDay) {
-  /*total if players are swapped - total when player are not swapped */
+function calculateStatChange(selectedPlayerStats, selectedPlayerRemainingGames, targetPlayerStats, targetPlayerRemainingGames) {
+  let arr = new Array(11)
+  for (let i = 0; i < 2; i++) {
+    arr[i*2] = new Array(2)
+    for (let j = 0; j < 2; j++){
+      arr[i*2][j] = Math.round((targetPlayerStats[i][j] * targetPlayerRemainingGames - selectedPlayerStats[i][j] * selectedPlayerRemainingGames)*10)/10
+    }
+    arr[i*2] = String(arr[i*2][0]) + "/" + String(arr[i*2][1])
+  }
+
+  for (let i = 2; i < 9; i++) {
+    arr[i+2] = Math.round((targetPlayerStats[i] * targetPlayerRemainingGames - selectedPlayerStats[i] * selectedPlayerRemainingGames)*10)/10
+  }
+  return arr;
 }
 
+const statChangeData = {
+  avgStatsCurrentSeason: [],
+  avgStatsLastSeason: [],
+  avgStats7d: [],
+  avgStats14d: []
+};
+
 function populateStatChangeData(e) {
-  //called by mouseclick of plusMinus
-  console.log(e.target);
-  console.log(targetPlayerStatsObject);
-  console.log(myRosterStatsObject);
+  const timestampForCurrentDay = getTimeStampOfCurrentWeek()[e.target.dayIndex-2]
+
+  const selectedPlayerRemainingGames = getRemainingGamesInWeekForPlayerAfterSelectedDate(myRostersGamesForCurrentWeek[e.target.playerIndex],timestampForCurrentDay)
+  
+  const targetPlayerRemainingGames = getRemainingGamesInWeekForPlayerAfterSelectedDate(targetPlayerGamesForCurrentWeek, timestampForCurrentDay)
+
+  Object.keys(statChangeData).forEach(function (statType) {statChangeData[statType][0] = calculateStatChange(myRosterStatsObject[statType][e.target.playerIndex], selectedPlayerRemainingGames, targetPlayerStatsObject[statType], targetPlayerRemainingGames)})
+
+
 }
+
+function getRemainingGamesInWeekForPlayerAfterSelectedDate(array, timestamp) {
+  let gamesRemainingForSelectedPlayer = array.filter( element => 
+    element >= timestamp).length;
+  return gamesRemainingForSelectedPlayer;
+}
+
+function updateStatChangeTable (statType) {
+  turnDataIntoHTMLTable(statTableHeading, statChangeData[statType], statChangeTable)
+}
+
+/* PART K END */
 
 /*   */
 const availablePlayers = document.querySelectorAll("a.Nowrap");
@@ -502,6 +557,17 @@ toggleButton.innerHTML = "Toggle";
 toggleButton.addEventListener("click", () => {
   toggleTableData();
 });
+const statSelector = document.createElement("select");
+
+for (let statType of Object.keys(statChangeData)){
+  const statOption = document.createElement("option")
+  statOption.innerHTML = statType
+  statSelector.appendChild(statOption)
+}
+statSelector.addEventListener('change', () => updateStatChangeTable(statSelector.options[statSelector.selectedIndex].innerHTML))
+
+
+comparisonBox.appendChild(statSelector)
 
 const closeButton = document.createElement("button");
 closeButton.innerHTML = "close";
@@ -539,7 +605,13 @@ for (element of availablePlayers) {
     );
 
     updateTargetPlayerStatsObject(targetPlayer, targetPlayerTeam);
+    
+    targetPlayerGamesForCurrentWeek = getGamesInWeekForPlayer(targetPlayerTeam)
+
+
   });
+
+
 
   // element.addEventListener("mouseout", () => {
   //   comparisonBox.style["display"] = "none";
