@@ -24,7 +24,7 @@ async function getGameSchedule() {
     .then(text => populateGameScheduleArray(text))
     .then(() =>
       populateCurrentWeekGameScheduleArray(getTimeStampOfCurrentWeek())
-    );
+    ); 
 }
 
 function populateGameScheduleArray(arr) {
@@ -56,7 +56,10 @@ function getTimeStampOfCurrentWeek() {
 
 function populateCurrentWeekGameScheduleArray(week) {
   const newGameScheduleArray = gameScheduleArray[0].map(Number);
-  const indexOfMondayFirstGame = newGameScheduleArray.indexOf(week[0]);
+  let indexOfMondayFirstGame = newGameScheduleArray.indexOf(week[0]);
+  if (indexOfMondayFirstGame === -1) {
+    indexOfMondayFirstGame = newGameScheduleArray.indexOf(week[1]);
+  } //TODO: improve
   let indexOfSundayLastGame = newGameScheduleArray.indexOf(week[7]) - 1;
   if (indexOfSundayLastGame === -2) {
     indexOfSundayLastGame =
@@ -73,10 +76,11 @@ function populateCurrentWeekGameScheduleArray(week) {
 /* END OF PART A */
 
 /* PART B: Collect list of players on my Roster and populate myRoster */
+const leagueID = (window.location.href).split('/')[4]
 const myRoster = [[], []];
 function getMyRoster() {
   return new Promise(resolve => {
-    fetch("https://basketball.fantasysports.yahoo.com/nba/44190/4") //TODO: get unique LeaugeID# from url and replace 44190 with it
+    fetch(`https://basketball.fantasysports.yahoo.com/nba/${leagueID}/4`) 
       .then(response => response.text())
       .then(text => {
         const parser = new DOMParser();
@@ -103,10 +107,7 @@ function getMyRoster() {
 
 /* PART C: Go through myRoster and create an array for each player that contains the dates of his team's 
 games for the week. Store all arrays in a single array myRostersGamesForCurrentWeek */
-const myRostersGamesForCurrentWeek = []; //TODO: confirm that this array is needed
-
-
-
+const myRostersGamesForCurrentWeek = [];
 
 function getGamesInWeekForPlayer(team) {
   let gamesInWeek = [];
@@ -264,15 +265,11 @@ function turnDataIntoHTMLTable(headingRow, tableData, tableHTMLElement) {
       td.dayIndex = j;
       td.playerIndex = i;
       /* add click listener to days only AFTER current day */
-      if ((getTimeStampOfCurrentWeek()[j-2] > getTimeStampOfCurrentDay()-180000000) && (headingRow[0] == "My Roster")) {
+      if ((getTimeStampOfCurrentWeek()[j-2] > getTimeStampOfCurrentDay()) && (headingRow[0] == "My Roster")) {
         td.addEventListener("click", function (e) {
           populateStatChangeData(e);
           updateStatChangeTable(statSelector.options[statSelector.selectedIndex].innerHTML)
-          
         });
-
-
-
       }
       td.appendChild(document.createTextNode(tableData[i][j]));
       tr.appendChild(td);
@@ -367,26 +364,25 @@ const myRosterStatsObject = {
 };
 
 const myRosterStatsUrls = [
-  "https://basketball.fantasysports.yahoo.com/nba/44190/4?stat1=AS&stat2=AS_2018",
-  "https://basketball.fantasysports.yahoo.com/nba/44190/4?stat1=AS&stat2=AS_2017",
-  "https://basketball.fantasysports.yahoo.com/nba/44190/4?stat1=AS&stat2=AL7",
-  "https://basketball.fantasysports.yahoo.com/nba/44190/4?stat1=AS&stat2=AL14"
+  `https://basketball.fantasysports.yahoo.com/nba/${leagueID}/4?stat1=AS&stat2=AS_2018`,
+  `https://basketball.fantasysports.yahoo.com/nba/${leagueID}/4?stat1=AS&stat2=AS_2017`,
+  `https://basketball.fantasysports.yahoo.com/nba/${leagueID}/4?stat1=AS&stat2=AL7`,
+  `https://basketball.fantasysports.yahoo.com/nba/${leagueID}/4?stat1=AS&stat2=AL14`
 ];
 
-async function updateMyRosterStatsObject() {
-  myRosterStatsObject.avgStatsCurrentSeason = await collectMyRosterStats(
-    myRosterStatsUrls[0]
-  );
-  myRosterStatsObject.avgStatsLastSeason = await collectMyRosterStats(
-    myRosterStatsUrls[1]
-  );
-  myRosterStatsObject.avgStats7d = await collectMyRosterStats(
-    myRosterStatsUrls[2]
-  );
-  myRosterStatsObject.avgStats14d = await collectMyRosterStats(
-    myRosterStatsUrls[3]
-  ); //TODO: improve
+function updateMyRosterStatsObject() {
+  let j = 0;
+  asyncForEach(Object.keys(myRosterStatsObject), async(key) => {
+    myRosterStatsObject[key] = await collectMyRosterStats(myRosterStatsUrls[j]);
+    j++;
+  })
 }
+
+async function asyncForEach(array, callback) {
+  for (let i = 0; i < array.length; i++) {
+    await callback(array[i], i, array)
+  }
+} //function that allows async/await in forEach loops
 
 /* END OF PART I */
 
@@ -451,37 +447,23 @@ async function updateTargetPlayerStatsObject(targetPlayer, targetPlayerTeam) {
   let targetPlayerLastName = targetPlayer.split(" ")[1];
 
   const targetPlayerStatsUrls = [
-    `https://basketball.fantasysports.yahoo.com/nba/44190/playersearch?&search=${targetPlayerLastName}&stat1=S_AS_2018&jsenabled=1`,
-    `https://basketball.fantasysports.yahoo.com/nba/44190/playersearch?&search=${targetPlayerLastName}&stat1=S_AS_2017&jsenabled=1`,
-    `https://basketball.fantasysports.yahoo.com/nba/44190/playersearch?&search=${targetPlayerLastName}&stat1=S_AL7&jsenabled=1`,
-    `https://basketball.fantasysports.yahoo.com/nba/44190/playersearch?&search=${targetPlayerLastName}&stat1=S_AL14&jsenabled=1`
+    `https://basketball.fantasysports.yahoo.com/nba/${leagueID}/playersearch?&search=${targetPlayerLastName}&stat1=S_AS_2018&jsenabled=1`,
+    `https://basketball.fantasysports.yahoo.com/nba/${leagueID}/playersearch?&search=${targetPlayerLastName}&stat1=S_AS_2017&jsenabled=1`,
+    `https://basketball.fantasysports.yahoo.com/nba/${leagueID}/playersearch?&search=${targetPlayerLastName}&stat1=S_AL7&jsenabled=1`,
+    `https://basketball.fantasysports.yahoo.com/nba/${leagueID}/playersearch?&search=${targetPlayerLastName}&stat1=S_AL14&jsenabled=1`
   ];
 
-  targetPlayerStatsObject.avgStatsCurrentSeason = await collectTargetPlayerStats(
-    targetPlayerTeam,
-    targetPlayerStatsUrls[0]
-  );
-  targetPlayerStatsObject.avgStatsLastSeason = await collectTargetPlayerStats(
-    targetPlayerTeam,
-    targetPlayerStatsUrls[1]
-  );
-  targetPlayerStatsObject.avgStats7d = await collectTargetPlayerStats(
-    targetPlayerTeam,
-    targetPlayerStatsUrls[2]
-  );
-  targetPlayerStatsObject.avgStats14d = await collectTargetPlayerStats(
-    targetPlayerTeam,
-    targetPlayerStatsUrls[3]
-  ); //TODO: improve
-
-  // let j = 0;
-  // Object.keys(targetPlayerStatsObject).forEach(async function(key) {
-  //   targetPlayerStatsObject[key] = await collectTargetPlayerStats(
-  //     targetPlayerTeam,
-  //     targetPlayerStatsUrls[j]
-  //   );
-  //   j++;
-  // });
+  
+  let j = 0;
+  asyncForEach(Object.keys(targetPlayerStatsObject), async(key) => {
+    targetPlayerStatsObject[key] = await collectTargetPlayerStats(targetPlayerTeam, targetPlayerStatsUrls[j]);
+    j++
+  })
+  
+  // Object.keys(targetPlayerStatsObject).forEach(async (key) => {
+  //   targetPlayerStatsObject[key] = await collectTargetPlayerStats(targetPlayerTeam, targetPlayerStatsUrls[i]);
+  //   i++
+  // })
 }
 
 /* END OF PART J */
@@ -526,14 +508,14 @@ const statChangeData = {
 
 function populateStatChangeData(e) {
   const timestampForCurrentDay = getTimeStampOfCurrentWeek()[e.target.dayIndex-2]
-
   const selectedPlayerRemainingGames = getRemainingGamesInWeekForPlayerAfterSelectedDate(myRostersGamesForCurrentWeek[e.target.playerIndex],timestampForCurrentDay)
-  
   const targetPlayerRemainingGames = getRemainingGamesInWeekForPlayerAfterSelectedDate(targetPlayerGamesForCurrentWeek, timestampForCurrentDay)
 
-  Object.keys(statChangeData).forEach(function (statType) {statChangeData[statType][0] = calculateStatChange(myRosterStatsObject[statType][e.target.playerIndex], selectedPlayerRemainingGames, targetPlayerStatsObject[statType], targetPlayerRemainingGames)})
-
-
+  Object.keys(statChangeData).forEach(function (statType) {
+    statChangeData[statType][0] = calculateStatChange(myRosterStatsObject[statType][e.target.playerIndex], 
+    selectedPlayerRemainingGames, targetPlayerStatsObject[statType], targetPlayerRemainingGames)
+  })
+   
 }
 
 function getRemainingGamesInWeekForPlayerAfterSelectedDate(array, timestamp) {
@@ -607,7 +589,6 @@ for (element of availablePlayers) {
     updateTargetPlayerStatsObject(targetPlayer, targetPlayerTeam);
     
     targetPlayerGamesForCurrentWeek = getGamesInWeekForPlayer(targetPlayerTeam)
-
 
   });
 
