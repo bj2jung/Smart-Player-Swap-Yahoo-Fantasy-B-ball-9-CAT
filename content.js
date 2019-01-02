@@ -5,6 +5,7 @@ async function loadDataAtPageLoad() {
   await getMyRoster();
   populateMyRostersGamesForCurrentWeek();
   populateDailyMatchupTableData();
+  debugger;
   updateMyRosterStatsObject();
 }
 
@@ -24,7 +25,7 @@ async function getGameSchedule() {
     .then(text => populateGameScheduleArray(text))
     .then(() =>
       populateCurrentWeekGameScheduleArray(getTimeStampOfCurrentWeek())
-    ); 
+    );
 }
 
 function populateGameScheduleArray(arr) {
@@ -80,7 +81,7 @@ const leagueID = (window.location.href).split('/')[4]
 const myRoster = [[], []];
 function getMyRoster() {
   return new Promise(resolve => {
-    fetch(`https://basketball.fantasysports.yahoo.com/nba/${leagueID}/4`) 
+    fetch(`https://basketball.fantasysports.yahoo.com/nba/${leagueID}/4`)
       .then(response => response.text())
       .then(text => {
         const parser = new DOMParser();
@@ -153,8 +154,8 @@ function populateWeekTableHeading(firstColumnHeading) {
 }
 
 function populateDailyMatchupDataRow(player, team) {
-  let arr = new Array(9).fill("");
-  arr[0] = player;
+  let arr = new Array(10).fill("");
+  arr[0] = player
   arr[1] = getGamesInWeekForPlayer(team).length;
 
   for (i = 0; i < currentWeekGameScheduleArray[0].length; i++) {
@@ -172,6 +173,7 @@ function populateDailyMatchupDataRow(player, team) {
       ] = "@" + currentWeekGameScheduleArray[1][i];
     }
   }
+  arr[9] = team;
   return arr;
 }
 
@@ -203,7 +205,7 @@ function populateDailyPlusMinusDataRow(
   myPlayerTeam,
   targetPlayerTeam
 ) {
-  let arr = new Array(9);
+  let arr = new Array(10);
   arr[0] = myPlayer;
   arr[1] = getGamesInWeekForPlayer(myPlayerTeam).length;
 
@@ -217,6 +219,7 @@ function populateDailyPlusMinusDataRow(
       ).length -
       arr[1];
   }
+  arr[9] = myPlayerTeam
   return arr;
 }
 
@@ -240,7 +243,53 @@ function populateDailyPlusMinusTableData(targetPlayerTeam) {
 /* PART G: when target player name is hovered, make the dailyMatchupTableData into a html table.
 Add event listener to table  */
 
-function turnDataIntoHTMLTable(headingRow, tableData, tableHTMLElement) {
+function turnDataIntoWeekHTMLTable(headingRow, tableData, tableHTMLElement) {
+  while (tableHTMLElement.hasChildNodes()) {
+    tableHTMLElement.removeChild(tableHTMLElement.lastChild);
+  }
+  let table = document.createElement("table");
+  let tableBody = document.createElement("tbody");
+  table.border = "1";
+
+  let tr = document.createElement("tr");
+  tableBody.appendChild(tr);
+
+  for (let i in headingRow) {
+    let th = document.createElement("th");
+    th.setAttribute("id", "col" + i);
+    th.appendChild(document.createTextNode(headingRow[i]));
+    tr.appendChild(th);
+  }
+
+  for (let i = 0; i < tableData.length; i++) {
+    let tr = document.createElement("tr");
+    for (j = 0; j < tableData[i].length - 1; j++) {
+      let td = document.createElement("td");
+      td.dayIndex = j;
+      td.playerIndex = i;
+      /* add click listener to days only AFTER current day */
+      if ((getTimeStampOfCurrentWeek()[j - 2] > getTimeStampOfCurrentDay()) && (headingRow[0] == "My Roster")) {
+        td.addEventListener("click", function (e) {
+          populateStatChangeData(e);
+          updateStatChangeTable(statSelector.options[statSelector.selectedIndex].innerHTML)
+        });
+      }
+      let spanElement = document.createElement("span");
+      spanElement.innerHTML = tableData[i][9];
+
+      td.appendChild(document.createTextNode(tableData[i][j]));
+
+      (j == 0) ? td.appendChild(spanElement) : null;
+
+      tr.appendChild(td);
+    }
+    tableBody.appendChild(tr);
+  }
+  table.appendChild(tableBody);
+  tableHTMLElement.appendChild(table);
+}
+
+function turnDataIntoStatHTMLTable(headingRow, tableData, tableHTMLElement) {
   while (tableHTMLElement.hasChildNodes()) {
     tableHTMLElement.removeChild(tableHTMLElement.lastChild);
   }
@@ -265,7 +314,7 @@ function turnDataIntoHTMLTable(headingRow, tableData, tableHTMLElement) {
       td.dayIndex = j;
       td.playerIndex = i;
       /* add click listener to days only AFTER current day */
-      if ((getTimeStampOfCurrentWeek()[j-2] > getTimeStampOfCurrentDay()) && (headingRow[0] == "My Roster")) {
+      if ((getTimeStampOfCurrentWeek()[j - 2] > getTimeStampOfCurrentDay()) && (headingRow[0] == "My Roster")) {
         td.addEventListener("click", function (e) {
           populateStatChangeData(e);
           updateStatChangeTable(statSelector.options[statSelector.selectedIndex].innerHTML)
@@ -292,14 +341,14 @@ function getTimeStampOfCurrentDay() {
 let x = 0;
 function toggleTableData() {
   if (x) {
-    turnDataIntoHTMLTable(
+    turnDataIntoWeekHTMLTable(
       populateWeekTableHeading("My Roster"),
       dailyPlusMinusTableData,
       myRosterTable
     );
     x = 0;
   } else {
-    turnDataIntoHTMLTable(
+    turnDataIntoWeekHTMLTable(
       populateWeekTableHeading("My Roster"),
       dailyMatchupTableData,
       myRosterTable
@@ -331,10 +380,10 @@ function collectMyRosterStats(url) {
           for (let i = 12; i <= 14; i += 2) {
             let FGFTRecord = htmlDocument.documentElement.querySelector(
               "#statTable0 > tbody > tr:nth-child(" +
-                n +
-                ") > td:nth-child(" +
-                i +
-                ") > div > span"
+              n +
+              ") > td:nth-child(" +
+              i +
+              ") > div > span"
             );
             innerArray.push(FGFTRecord.innerText.split("/").map(k => Number(k)));
           }
@@ -342,10 +391,10 @@ function collectMyRosterStats(url) {
           for (let i = 16; i <= 22; i++) {
             let otherStats = htmlDocument.documentElement.querySelector(
               "#statTable0 > tbody > tr:nth-child(" +
-                n +
-                ") > td:nth-child(" +
-                i +
-                ") > div"
+              n +
+              ") > td:nth-child(" +
+              i +
+              ") > div"
             );
             innerArray.push(Number(otherStats.innerText));
           }
@@ -372,7 +421,7 @@ const myRosterStatsUrls = [
 
 function updateMyRosterStatsObject() {
   let j = 0;
-  asyncForEach(Object.keys(myRosterStatsObject), async(key) => {
+  asyncForEach(Object.keys(myRosterStatsObject), async (key) => {
     myRosterStatsObject[key] = await collectMyRosterStats(myRosterStatsUrls[j]);
     j++;
   })
@@ -453,13 +502,13 @@ async function updateTargetPlayerStatsObject(targetPlayer, targetPlayerTeam) {
     `https://basketball.fantasysports.yahoo.com/nba/${leagueID}/playersearch?&search=${targetPlayerLastName}&stat1=S_AL14&jsenabled=1`
   ];
 
-  
+
   let j = 0;
-  asyncForEach(Object.keys(targetPlayerStatsObject), async(key) => {
+  asyncForEach(Object.keys(targetPlayerStatsObject), async (key) => {
     targetPlayerStatsObject[key] = await collectTargetPlayerStats(targetPlayerTeam, targetPlayerStatsUrls[j]);
     j++
   })
-  
+
   // Object.keys(targetPlayerStatsObject).forEach(async (key) => {
   //   targetPlayerStatsObject[key] = await collectTargetPlayerStats(targetPlayerTeam, targetPlayerStatsUrls[i]);
   //   i++
@@ -486,15 +535,15 @@ const statTableHeading = [
 function calculateStatChange(selectedPlayerStats, selectedPlayerRemainingGames, targetPlayerStats, targetPlayerRemainingGames) {
   let arr = new Array(11)
   for (let i = 0; i < 2; i++) {
-    arr[i*2] = new Array(2)
-    for (let j = 0; j < 2; j++){
-      arr[i*2][j] = Math.round((targetPlayerStats[i][j] * targetPlayerRemainingGames - selectedPlayerStats[i][j] * selectedPlayerRemainingGames)*10)/10
+    arr[i * 2] = new Array(2)
+    for (let j = 0; j < 2; j++) {
+      arr[i * 2][j] = Math.round((targetPlayerStats[i][j] * targetPlayerRemainingGames - selectedPlayerStats[i][j] * selectedPlayerRemainingGames) * 10) / 10
     }
-    arr[i*2] = String(arr[i*2][0]) + "/" + String(arr[i*2][1])
+    arr[i * 2] = String(arr[i * 2][0]) + "/" + String(arr[i * 2][1])
   }
 
   for (let i = 2; i < 9; i++) {
-    arr[i+2] = Math.round((targetPlayerStats[i] * targetPlayerRemainingGames - selectedPlayerStats[i] * selectedPlayerRemainingGames)*10)/10
+    arr[i + 2] = Math.round((targetPlayerStats[i] * targetPlayerRemainingGames - selectedPlayerStats[i] * selectedPlayerRemainingGames) * 10) / 10
   }
   return arr;
 }
@@ -507,28 +556,37 @@ const statChangeData = {
 };
 
 function populateStatChangeData(e) {
-  const timestampForCurrentDay = getTimeStampOfCurrentWeek()[e.target.dayIndex-2]
-  const selectedPlayerRemainingGames = getRemainingGamesInWeekForPlayerAfterSelectedDate(myRostersGamesForCurrentWeek[e.target.playerIndex],timestampForCurrentDay)
+  const timestampForCurrentDay = getTimeStampOfCurrentWeek()[e.target.dayIndex - 2]
+  const selectedPlayerRemainingGames = getRemainingGamesInWeekForPlayerAfterSelectedDate(myRostersGamesForCurrentWeek[e.target.playerIndex], timestampForCurrentDay)
   const targetPlayerRemainingGames = getRemainingGamesInWeekForPlayerAfterSelectedDate(targetPlayerGamesForCurrentWeek, timestampForCurrentDay)
 
   Object.keys(statChangeData).forEach(function (statType) {
-    statChangeData[statType][0] = calculateStatChange(myRosterStatsObject[statType][e.target.playerIndex], 
-    selectedPlayerRemainingGames, targetPlayerStatsObject[statType], targetPlayerRemainingGames)
+    statChangeData[statType][0] = calculateStatChange(myRosterStatsObject[statType][e.target.playerIndex],
+      selectedPlayerRemainingGames, targetPlayerStatsObject[statType], targetPlayerRemainingGames)
   })
-   
+
 }
 
 function getRemainingGamesInWeekForPlayerAfterSelectedDate(array, timestamp) {
-  let gamesRemainingForSelectedPlayer = array.filter( element => 
+  let gamesRemainingForSelectedPlayer = array.filter(element =>
     element >= timestamp).length;
   return gamesRemainingForSelectedPlayer;
 }
 
-function updateStatChangeTable (statType) {
-  turnDataIntoHTMLTable(statTableHeading, statChangeData[statType], statChangeTable)
+function updateStatChangeTable(statType) {
+  turnDataIntoStatHTMLTable(statTableHeading, statChangeData[statType], statChangeTable)
 }
 
 /* PART K END */
+
+/* PART L: populate myRosterTotalStats array with up-to-date stats */
+
+function populateMyRosterTotalStats() {
+
+}
+
+
+/* PART L END */
 
 /*   */
 const availablePlayers = document.querySelectorAll("a.Nowrap");
@@ -541,7 +599,7 @@ toggleButton.addEventListener("click", () => {
 });
 const statSelector = document.createElement("select");
 
-for (let statType of Object.keys(statChangeData)){
+for (let statType of Object.keys(statChangeData)) {
   const statOption = document.createElement("option")
   statOption.innerHTML = statType
   statSelector.appendChild(statOption)
@@ -575,20 +633,21 @@ for (element of availablePlayers) {
     comparisonBox.style["display"] = "block";
     populateTargetPlayerMatchupDataRow(targetPlayer, targetPlayerTeam);
     populateDailyPlusMinusTableData(targetPlayerTeam);
-    turnDataIntoHTMLTable(
+    turnDataIntoWeekHTMLTable(
       populateWeekTableHeading("Target Player"),
       targetPlayerMatchupDataRow,
       targetPlayerTable
     );
-    turnDataIntoHTMLTable(
+    turnDataIntoWeekHTMLTable(
       populateWeekTableHeading("My Roster"),
       dailyPlusMinusTableData,
       myRosterTable
     );
 
     updateTargetPlayerStatsObject(targetPlayer, targetPlayerTeam);
-    
+
     targetPlayerGamesForCurrentWeek = getGamesInWeekForPlayer(targetPlayerTeam)
+
 
   });
 
