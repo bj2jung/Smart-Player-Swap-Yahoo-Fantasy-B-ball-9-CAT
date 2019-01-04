@@ -293,12 +293,7 @@ function populateDailyPlusMinusTableData(targetPlayerTeam) {
 /* PART G: when target player name is hovered, make the dailyMatchupTableData into a html table.
 Add event listener to table  */
 
-function turnDataIntoWeekHTMLTable(
-  headingRow,
-  tableData,
-  tableHTMLElement,
-  selectedPlayersIndex
-) {
+function turnDataIntoWeekHTMLTable(headingRow, tableData, tableHTMLElement) {
   while (tableHTMLElement.hasChildNodes()) {
     tableHTMLElement.removeChild(tableHTMLElement.lastChild);
   }
@@ -639,7 +634,9 @@ function populateStatChangeData(e) {
     e.target.dayIndex - 2
   ];
   const selectedPlayerRemainingGames = getRemainingGamesInWeekForPlayerAfterSelectedDate(
-    myRostersGamesForCurrentWeek[e.target.playerIndex],
+    myRostersGamesForCurrentWeek[
+      getSelectedPlayerIndeces(playerSelector)[e.target.playerIndex]
+    ],
     timestampForCurrentDay
   );
   const targetPlayerRemainingGames = getRemainingGamesInWeekForPlayerAfterSelectedDate(
@@ -647,11 +644,11 @@ function populateStatChangeData(e) {
     timestampForCurrentDay
   );
 
-  console.log(e.target.playerIndex);
-
   Object.keys(statChangeData).forEach(function(statType) {
     statChangeData[statType][0] = calculateStatChange(
-      myRosterStatsObject[statType][e.target.playerIndex],
+      myRosterStatsObject[statType][
+        getSelectedPlayerIndeces(playerSelector)[e.target.playerIndex]
+      ],
       selectedPlayerRemainingGames,
       targetPlayerStatsObject[statType],
       targetPlayerRemainingGames
@@ -719,8 +716,7 @@ playerSelector.addEventListener("change", () => {
   turnDataIntoWeekHTMLTable(
     populateWeekTableHeading("My Roster"),
     filteredTable,
-    myRosterTable,
-    selectedPlayersIndex
+    myRosterTable
   );
 });
 
@@ -774,17 +770,19 @@ for (element of availablePlayers) {
       targetPlayerMatchupDataRow,
       targetPlayerTable
     );
-    // turnDataIntoWeekHTMLTable(
-    //   populateWeekTableHeading("My Roster"),
-    //   dailyPlusMinusTableData,
-    //   myRosterTable
-    // );
+    turnDataIntoWeekHTMLTable(
+      populateWeekTableHeading("My Roster"),
+      dailyPlusMinusTableData,
+      myRosterTable
+    );
 
     updateTargetPlayerStatsObject(targetPlayer, targetPlayerTeam);
 
     targetPlayerGamesForCurrentWeek = getGamesInCurrentWeekForPlayer(
       targetPlayerTeam
     );
+
+    console.log(dailyPlusMinusTableData);
   });
 
   // element.addEventListener("mouseout", () => {
