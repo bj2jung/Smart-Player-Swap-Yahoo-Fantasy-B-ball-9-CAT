@@ -320,7 +320,7 @@ function turnDataIntoWeekHTMLTable(headingRow, tableData, tableHTMLElement) {
       /* add click listener to days only AFTER current day */
       if (
         getTimeStampOfCurrentWeek()[j - 2] > getTimeStampOfCurrentDay() &&
-        headingRow[0] == "My Roster"
+        headingRow[0] == "My Player"
       ) {
         td.addEventListener("click", function(e) {
           populateStatChangeData(e);
@@ -393,7 +393,7 @@ function toggleTableData() {
       dailyPlusMinusTableData
     );
     turnDataIntoWeekHTMLTable(
-      populateWeekTableHeading("My Roster"),
+      populateWeekTableHeading("My Player"),
       filteredTable,
       myRosterTable
     );
@@ -404,7 +404,7 @@ function toggleTableData() {
       dailyMatchupTableData
     );
     turnDataIntoWeekHTMLTable(
-      populateWeekTableHeading("My Roster"),
+      populateWeekTableHeading("My Player"),
       filteredTable,
       myRosterTable
     );
@@ -579,9 +579,7 @@ async function updateTargetPlayerStatsObject(targetPlayer, targetPlayerTeam) {
 /* PART K: populate statChangeTable  */
 const statTableHeading = [
   "FGM/A",
-  "FG%",
   "FTM/A",
-  "FT%",
   "3PTM",
   "PTS",
   "REB",
@@ -597,22 +595,22 @@ function calculateStatChange(
   targetPlayerStats,
   targetPlayerRemainingGames
 ) {
-  let arr = new Array(11);
+  let arr = new Array(9);
   for (let i = 0; i < 2; i++) {
-    arr[i * 2] = new Array(2);
+    arr[i] = new Array(2);
     for (let j = 0; j < 2; j++) {
-      arr[i * 2][j] =
+      arr[i][j] =
         Math.round(
           (targetPlayerStats[i][j] * targetPlayerRemainingGames -
             selectedPlayerStats[i][j] * selectedPlayerRemainingGames) *
             10
         ) / 10;
     }
-    arr[i * 2] = String(arr[i * 2][0]) + "/" + String(arr[i * 2][1]);
+    arr[i] = String(arr[i][0]) + "/" + String(arr[i][1]);
   }
 
   for (let i = 2; i < 9; i++) {
-    arr[i + 2] =
+    arr[i] =
       Math.round(
         (targetPlayerStats[i] * targetPlayerRemainingGames -
           selectedPlayerStats[i] * selectedPlayerRemainingGames) *
@@ -695,8 +693,7 @@ statSelector.addEventListener("change", () =>
   )
 );
 
-//////////////////////////////////////////////
-
+/* PART L: create HTML select multiple element to allow user to choose which players from myRoster are to be compared */
 const playerSelector = document.createElement("select");
 playerSelector.multiple = true;
 
@@ -714,7 +711,7 @@ playerSelector.addEventListener("change", () => {
     dailyPlusMinusTableData
   );
   turnDataIntoWeekHTMLTable(
-    populateWeekTableHeading("My Roster"),
+    populateWeekTableHeading("My Player"),
     filteredTable,
     myRosterTable
   );
@@ -729,14 +726,19 @@ function getSelectedPlayerIndeces(dropdown) {
 }
 
 function filterDataForTable(selectedPlayersIndex, tableToFilter) {
-  let arr = [];
+  selectedPlayerListAndPlusMinusData = [];
   for (let i of selectedPlayersIndex) {
-    arr.push(tableToFilter[i]);
+    selectedPlayerListAndPlusMinusData.push(tableToFilter[i]);
   }
-  return arr;
+  if (selectedPlayerListAndPlusMinusData.length == 0) {
+    selectedPlayerListAndPlusMinusData = [new Array(11).fill("")];
+  }
+  return selectedPlayerListAndPlusMinusData;
 }
 
-///////////////////////////////////////////////////////
+/* PART L END */
+
+let selectedPlayerListAndPlusMinusData = null;
 
 comparisonBox.appendChild(playerSelector);
 comparisonBox.appendChild(statSelector);
@@ -765,14 +767,18 @@ for (element of availablePlayers) {
     comparisonBox.style["display"] = "block";
     populateTargetPlayerMatchupDataRow(targetPlayer, targetPlayerTeam);
     populateDailyPlusMinusTableData(targetPlayerTeam);
+    filterDataForTable(
+      getSelectedPlayerIndeces(playerSelector),
+      dailyPlusMinusTableData
+    );
     turnDataIntoWeekHTMLTable(
       populateWeekTableHeading("Target Player"),
       targetPlayerMatchupDataRow,
       targetPlayerTable
     );
     turnDataIntoWeekHTMLTable(
-      populateWeekTableHeading("My Roster"),
-      dailyPlusMinusTableData,
+      populateWeekTableHeading("My Player"),
+      selectedPlayerListAndPlusMinusData,
       myRosterTable
     );
 
@@ -781,8 +787,6 @@ for (element of availablePlayers) {
     targetPlayerGamesForCurrentWeek = getGamesInCurrentWeekForPlayer(
       targetPlayerTeam
     );
-
-    console.log(dailyPlusMinusTableData);
   });
 
   // element.addEventListener("mouseout", () => {

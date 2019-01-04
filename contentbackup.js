@@ -292,14 +292,14 @@ let x = 1;
 function toggleTableData() {
   if (x) {
     turnDataIntoHTMLTable(
-      populateTableHeading("My Roster"),
+      populateTableHeading("My Player"),
       dailyPlusMinusTableData,
       myRosterTable
     );
     x = 0;
   } else {
     turnDataIntoHTMLTable(
-      populateTableHeading("My Roster"),
+      populateTableHeading("My Player"),
       dailyMatchupTableData,
       myRosterTable
     );
@@ -406,7 +406,7 @@ for (element of availablePlayers) {
       targetPlayerTable
     );
     turnDataIntoHTMLTable(
-      populateTableHeading("My Roster"),
+      populateTableHeading("My Player"),
       dailyMatchupTableData,
       myRosterTable
     );
