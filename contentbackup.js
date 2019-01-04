@@ -124,7 +124,7 @@ function getMyRoster() {
 /* PART C: Go through myRoster and create an array for each player that contains the dates of his team's games for the week. Store all arrays in a single array myRostersGamesForCurrentWeek */
 const myRostersGamesForCurrentWeek = []; //TODO: confirm that this array is needed
 
-function getGamesInWeekForPlayer(team) {
+function getGamesInCurrentWeekForPlayer(team) {
   let gamesInWeek = [];
   for (j = 1; j <= 2; j++) {
     for (i in currentWeekGameScheduleArray[j]) {
@@ -140,7 +140,7 @@ function populateMyRostersGamesForCurrentWeek() {
   if (myRostersGamesForCurrentWeek.length == 0) {
     for (i in myRoster[1]) {
       myRostersGamesForCurrentWeek.push(
-        getGamesInWeekForPlayer(myRoster[1][i])
+        getGamesInCurrentWeekForPlayer(myRoster[1][i])
       );
     }
   }
@@ -170,7 +170,7 @@ function populateTableHeading(firstColumnHeading) {
 function populateDailyMatchupDataRow(player, team) {
   let arr = new Array(9).fill("");
   arr[0] = player;
-  arr[1] = getGamesInWeekForPlayer(team).length;
+  arr[1] = getGamesInCurrentWeekForPlayer(team).length;
 
   for (i = 0; i < currentWeekGameScheduleArray[0].length; i++) {
     if (team.includes(currentWeekGameScheduleArray[1][i])) {
@@ -219,14 +219,14 @@ function populateDailyPlusMinusDataRow(
 ) {
   let arr = new Array(9);
   arr[0] = myPlayer;
-  arr[1] = getGamesInWeekForPlayer(myPlayerTeam).length;
+  arr[1] = getGamesInCurrentWeekForPlayer(myPlayerTeam).length;
 
   for (let i = 2; i < 9; i++) {
     arr[i] =
-      getGamesInWeekForPlayer(myPlayerTeam).filter(
+      getGamesInCurrentWeekForPlayer(myPlayerTeam).filter(
         x => x < getTimeStampOfCurrentWeek()[i - 2]
       ).length +
-      getGamesInWeekForPlayer(targetPlayerTeam).filter(
+      getGamesInCurrentWeekForPlayer(targetPlayerTeam).filter(
         x => x >= getTimeStampOfCurrentWeek()[i - 2]
       ).length -
       arr[1];
