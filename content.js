@@ -380,8 +380,7 @@ function turnDataIntoStatHTMLTable(headingRow, tableData, tableHTMLElement) {
 function getTimeStampOfCurrentDay() {
   const date = new Date();
   return Math.floor(date);
-} //TODO: consider time zone difference
-
+}
 /* END OF PART G */
 
 /* PART H: create functionality where user can toggle between the dailyMatchUp and dailyPlusMinus data */
@@ -771,6 +770,10 @@ for (element of availablePlayers) {
 
     if (weekTableDataChoice == null) {
       weekTableDataChoice = dailyPlusMinusTableData;
+    } else if (weekTableDataChoice == dailyMatchupTableData) {
+      weekTableDataChoice = dailyMatchupTableData;
+    } else {
+      weekTableDataChoice = dailyPlusMinusTableData;
     }
 
     filterDataForTable(
@@ -787,7 +790,9 @@ for (element of availablePlayers) {
       selectedPlayerListWeekTableData,
       myRosterTable
     );
-    statChangeData.avgStatsCurrentSeason = [new Array(9).fill("-")];
+    Object.keys(statChangeData).forEach(
+      statType => (statChangeData[statType] = [new Array(9).fill("-")])
+    );
     turnDataIntoStatHTMLTable(
       statTableHeading,
       statChangeData.avgStatsCurrentSeason,
