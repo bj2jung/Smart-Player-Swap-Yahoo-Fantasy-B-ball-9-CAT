@@ -31,14 +31,18 @@ async function getGameSchedule() {
 }
 
 function populateGameScheduleArray(arr) {
-  for (j = 0; j < 3; j++) {
-    for (i = 0 + j; i < arr.length - 1; i += 3) {
+  for (let j = 0; j < 3; j++) {
+    for (let i = 0 + j; i < arr.length - 1; i += 3) {
       gameScheduleArray[j].push(arr[i]);
     }
   }
-  for (i in gameScheduleArray[2]) {
-    gameScheduleArray[2][i] = gameScheduleArray[2][i].slice(0, -1);
-  } //TODO: if statement req'd here to prevent break in differnt platforms
+
+  // code below required for glitch between different systems interacting with csv file
+  if (gameScheduleArray[2][0].slice(-1) * 1 === 0) {
+    for (let i in gameScheduleArray[2]) {
+      gameScheduleArray[2][i] = gameScheduleArray[2][i].slice(0, -1);
+    }
+  }
 }
 
 function getTimeStampOfCurrentWeek() {
@@ -82,13 +86,11 @@ const nextWeekGameScheduleArray = [[], [], []];
 function populateNextWeekGameScheduleArray(week) {
   const newGameScheduleArray = gameScheduleArray[0].map(Number);
   let indexOfMondayFirstGame = newGameScheduleArray.indexOf(week[7]);
-  // if (indexOfMondayFirstGame === -1) {
-  //   indexOfMondayFirstGame = newGameScheduleArray.indexOf(week[1]);
-  // } //TODO: improve
+
   let indexOfSundayLastGame = newGameScheduleArray.indexOf(week[8]) - 1;
   if (indexOfSundayLastGame === -2) {
     indexOfSundayLastGame =
-      newGameScheduleArray.indexOf(week[8] + 86400000) - 1; //TODO: improve
+      newGameScheduleArray.indexOf(week[8] + 86400000) - 1;
   }
   for (i = indexOfMondayFirstGame; i <= indexOfSundayLastGame; i++) {
     nextWeekGameScheduleArray[0].push(newGameScheduleArray[i]);
