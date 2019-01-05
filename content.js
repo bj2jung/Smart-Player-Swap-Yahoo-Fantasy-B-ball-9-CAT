@@ -317,7 +317,6 @@ function turnDataIntoWeekHTMLTable(headingRow, tableData, tableHTMLElement) {
       let td = document.createElement("td");
       td.dayIndex = j;
       td.playerIndex = i;
-      /* add click listener to days only AFTER current day */
       if (
         getTimeStampOfCurrentWeek()[j - 2] > getTimeStampOfCurrentDay() &&
         headingRow[0] == "My Player"
@@ -371,6 +370,7 @@ function turnDataIntoStatHTMLTable(headingRow, tableData, tableHTMLElement) {
     }
     tableBody.appendChild(tr);
   }
+
   table.appendChild(tableBody);
   tableHTMLElement.appendChild(table);
 }
@@ -382,23 +382,12 @@ function getTimeStampOfCurrentDay() {
 
 /* END OF PART G */
 
-/* PART H: create functionality where user can toggle between the two tables */
+/* PART H: create functionality where user can toggle between the dailyMatchUp and dailyPlusMinus data */
 
-let x = 0;
+let weekTableDataChoice = null;
 function toggleTableData() {
   let selectedPlayersIndex = getSelectedPlayerIndeces(playerSelector);
-  if (x) {
-    let filteredTable = filterDataForTable(
-      selectedPlayersIndex,
-      dailyPlusMinusTableData
-    );
-    turnDataIntoWeekHTMLTable(
-      populateWeekTableHeading("My Player"),
-      filteredTable,
-      myRosterTable
-    );
-    x = 0;
-  } else {
+  if (weekTableDataChoice == dailyPlusMinusTableData) {
     let filteredTable = filterDataForTable(
       selectedPlayersIndex,
       dailyMatchupTableData
@@ -408,7 +397,18 @@ function toggleTableData() {
       filteredTable,
       myRosterTable
     );
-    x = 1;
+    weekTableDataChoice = dailyMatchupTableData;
+  } else {
+    let filteredTable = filterDataForTable(
+      selectedPlayersIndex,
+      dailyPlusMinusTableData
+    );
+    turnDataIntoWeekHTMLTable(
+      populateWeekTableHeading("My Player"),
+      filteredTable,
+      myRosterTable
+    );
+    weekTableDataChoice = dailyPlusMinusTableData;
   }
 }
 
@@ -567,11 +567,6 @@ async function updateTargetPlayerStatsObject(targetPlayer, targetPlayerTeam) {
     );
     j++;
   });
-
-  // Object.keys(targetPlayerStatsObject).forEach(async (key) => {
-  //   targetPlayerStatsObject[key] = await collectTargetPlayerStats(targetPlayerTeam, targetPlayerStatsUrls[i]);
-  //   i++
-  // })
 }
 
 /* END OF PART J */
@@ -671,7 +666,7 @@ function updateStatChangeTable(statType) {
 
 /* PART K END */
 
-/*   */
+/* PART L: create misc HTML elements  */
 const availablePlayers = document.querySelectorAll("a.Nowrap");
 
 const comparisonBox = document.createElement("div");
@@ -693,7 +688,9 @@ statSelector.addEventListener("change", () =>
   )
 );
 
-/* PART L: create HTML select multiple element to allow user to choose which players from myRoster are to be compared */
+/* PART L END */
+
+/* PART M: create HTML select multiple element to allow user to choose which players from myRoster are to be compared */
 const playerSelector = document.createElement("select");
 playerSelector.multiple = true;
 
@@ -708,7 +705,7 @@ playerSelector.addEventListener("change", () => {
   let selectedPlayersIndex = getSelectedPlayerIndeces(playerSelector);
   let filteredTable = filterDataForTable(
     selectedPlayersIndex,
-    dailyPlusMinusTableData
+    weekTableDataChoice
   );
   turnDataIntoWeekHTMLTable(
     populateWeekTableHeading("My Player"),
@@ -726,19 +723,21 @@ function getSelectedPlayerIndeces(dropdown) {
 }
 
 function filterDataForTable(selectedPlayersIndex, tableToFilter) {
-  selectedPlayerListAndPlusMinusData = [];
+  selectedPlayerListWeekTableData = [];
   for (let i of selectedPlayersIndex) {
-    selectedPlayerListAndPlusMinusData.push(tableToFilter[i]);
+    selectedPlayerListWeekTableData.push(tableToFilter[i]);
   }
-  if (selectedPlayerListAndPlusMinusData.length == 0) {
-    selectedPlayerListAndPlusMinusData = [new Array(11).fill("")];
+  if (selectedPlayerListWeekTableData.length == 0) {
+    selectedPlayerListWeekTableData = [new Array(11).fill("")];
   }
-  return selectedPlayerListAndPlusMinusData;
+  return selectedPlayerListWeekTableData;
 }
 
-/* PART L END */
+/* PART M END */
 
-let selectedPlayerListAndPlusMinusData = null;
+/* PART N: add eventlisteners to HTML page */
+
+let selectedPlayerListWeekTableData = null;
 
 comparisonBox.appendChild(playerSelector);
 comparisonBox.appendChild(statSelector);
@@ -767,9 +766,14 @@ for (element of availablePlayers) {
     comparisonBox.style["display"] = "block";
     populateTargetPlayerMatchupDataRow(targetPlayer, targetPlayerTeam);
     populateDailyPlusMinusTableData(targetPlayerTeam);
+
+    if (weekTableDataChoice == null) {
+      weekTableDataChoice = dailyPlusMinusTableData;
+    }
+
     filterDataForTable(
       getSelectedPlayerIndeces(playerSelector),
-      dailyPlusMinusTableData
+      weekTableDataChoice
     );
     turnDataIntoWeekHTMLTable(
       populateWeekTableHeading("Target Player"),
@@ -778,8 +782,14 @@ for (element of availablePlayers) {
     );
     turnDataIntoWeekHTMLTable(
       populateWeekTableHeading("My Player"),
-      selectedPlayerListAndPlusMinusData,
+      selectedPlayerListWeekTableData,
       myRosterTable
+    );
+    statChangeData.avgStatsCurrentSeason = [new Array(9).fill("-")];
+    turnDataIntoStatHTMLTable(
+      statTableHeading,
+      statChangeData.avgStatsCurrentSeason,
+      statChangeTable
     );
 
     updateTargetPlayerStatsObject(targetPlayer, targetPlayerTeam);
@@ -793,6 +803,6 @@ for (element of availablePlayers) {
   //   comparisonBox.style["display"] = "none";
   // });
 }
-/* END  */
+/* PART N END  */
 
 loadDataAtPageLoad();
