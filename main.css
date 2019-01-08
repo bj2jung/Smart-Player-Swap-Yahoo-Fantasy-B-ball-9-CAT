@@ -3,33 +3,147 @@
   position: fixed;
   z-index: 2;
   left: 50%;
-  top: 20%;
-  bottom: 20%;
+  top: 40%;
+  bottom: 10%;
   right: 0;
   overflow: auto;
-  background-color: rgb(0, 0, 0);
-  background-color: rgba(0, 0, 0, 0.9);
-  color: white;
+  background-color: #f3f2f8;
+  color: #000000;
   font-size: 15px;
+  border-radius: 0.5em;
 }
-
-#comparisonBoxData {
-  color: white;
+#comparisonBox .weekTable {
+  margin: 1em 2.5em;
+  position: relative;
+  background-color: #fff;
+  padding: 0.75em 0;
+  width: auto;
+  box-sizing: border-box;
+  border-radius: 0.5em;
 }
-
-#comparisonBox div table tbody tr th {
-  width: 6%;
+#comparisonBox .weekTable table {
+  margin: auto;
 }
-
-#comparisonBox div table tbody tr #col0 {
-  width: 250px;
+#comparisonBox .weekTable th {
+  text-align: center;
+  padding-bottom: 0.3em;
+  text-transform: uppercase;
+  font-size: 13px;
+  letter-spacing: 0.08em;
 }
-
-#comparisonBox div table tbody tr #col1 {
-  width: 75px;
+#comparisonBox .weekTable td {
+  padding: 0.1em;
+  border-radius: 25px;
 }
-
-span {
+#comparisonBox .weekTable td .col2,
+#comparisonBox .weekTable td .col3,
+#comparisonBox .weekTable td .col4,
+#comparisonBox .weekTable td .col5,
+#comparisonBox .weekTable td .col6,
+#comparisonBox .weekTable td .col7,
+#comparisonBox .weekTable td .col8 {
+  font-size: 12px;
+}
+#comparisonBox .weekTable th,
+#comparisonBox .weekTable td {
+  table-layout: fixed;
+  border-bottom-color: #f3f2f8;
+  border-bottom-style: solid;
+  border-bottom-width: 3px;
+  border-left-color: #f3f2f8;
+  border-left-style: solid;
+  border-left-width: 3px;
+}
+#comparisonBox .weekTable span {
   font-size: 12px;
   padding-left: 5px;
 }
+#comparisonBox .weekTable .col0,
+#comparisonBox .weekTable .dataCol0 {
+  width: 15em;
+  border-left: none;
+}
+#comparisonBox .weekTable .col1 {
+  width: 6em;
+}
+#comparisonBox .weekTable .col2,
+#comparisonBox .weekTable .col3,
+#comparisonBox .weekTable .col4,
+#comparisonBox .weekTable .col5,
+#comparisonBox .weekTable .col6,
+#comparisonBox .weekTable .col7,
+#comparisonBox .weekTable .col8 {
+  width: 50px;
+}
+#comparisonBox .weekTable .col9 {
+  width: 90px;
+}
+#comparisonBox .weekTable .dataCol0 {
+  text-align: left;
+}
+#comparisonBox .weekTable .matchCount3 {
+  background-color: #fde581;
+}
+#comparisonBox .weekTable .matchCount4 {
+  background-color: #fbc600;
+}
+#comparisonBox .weekTable .matchCount5 {
+  background-color: #fd8b00;
+}
+#comparisonBox .weekTable .pastDate {
+  background-color: #f3f2f8;
+}
+#comparisonBox .weekTable .plusMinus-5,
+#comparisonBox .weekTable .plusMinus-4,
+#comparisonBox .weekTable .plusMinus-3,
+#comparisonBox .weekTable .plusMinus-2,
+#comparisonBox .weekTable .plusMinus-1 {
+  background-color: #fff;
+}
+#comparisonBox .weekTable .plusMinus0 {
+  background-color: #e4fff8;
+}
+#comparisonBox .weekTable .plusMinus1 {
+  background-color: #b7fbbe;
+}
+#comparisonBox .weekTable .plusMinus2 {
+  background-color: #90e9a7;
+}
+#comparisonBox .weekTable .plusMinus3 {
+  background-color: #46d272;
+}
+#comparisonBox .statTable {
+  margin: 1em 2.5em;
+  position: relative;
+  background-color: #fff;
+  width: auto;
+  padding: 0.75em 0;
+  border-radius: 0.5em;
+}
+#comparisonBox .statTable th,
+#comparisonBox .statTable td {
+  table-layout: fixed;
+  border-bottom-color: #f3f2f8;
+  border-bottom-style: solid;
+  border-bottom-width: 3px;
+  border-left-color: #f3f2f8;
+  border-left-style: solid;
+  border-left-width: 3px;
+}
+#comparisonBox .statTable th {
+  text-align: center;
+  width: 75px;
+  letter-spacing: 0.08em;
+}
+#comparisonBox .statTable td {
+  padding: 0.1em;
+}
+#comparisonBox .statTable table {
+  margin: auto;
+}
+#comparisonBox .statTable .col0,
+#comparisonBox .statTable .dataCol0 {
+  border-left: none;
+}
+
+/*# sourceMappingURL=main.css.map */

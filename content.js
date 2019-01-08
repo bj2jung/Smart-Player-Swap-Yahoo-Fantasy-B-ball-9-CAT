@@ -10,7 +10,7 @@ async function loadDataAtPageLoad() {
   populatePlayerListDropDown();
 }
 
-/* PART A: Fetch game schedule csv file, populate gameScheduleArray with all games for the season, 
+/* PART A: Fetch game schedule csv file, populate gameScheduleArray with all games for the season,
 populate currentWeekGameScheduleArray with games that occur in the current week (Monday thru Sunday) */
 
 const gameScheduleArray = [[], [], []];
@@ -67,11 +67,11 @@ function populateCurrentWeekGameScheduleArray(week) {
   let indexOfMondayFirstGame = newGameScheduleArray.indexOf(week[0]);
   if (indexOfMondayFirstGame === -1) {
     indexOfMondayFirstGame = newGameScheduleArray.indexOf(week[1]);
-  } //TODO: improve
+  }
   let indexOfSundayLastGame = newGameScheduleArray.indexOf(week[7]) - 1;
   if (indexOfSundayLastGame === -2) {
     indexOfSundayLastGame =
-      newGameScheduleArray.indexOf(week[7] + 86400000) - 1; //TODO: improve this function
+      newGameScheduleArray.indexOf(week[7] + 86400000) - 1;
   }
 
   for (i = indexOfMondayFirstGame; i <= indexOfSundayLastGame; i++) {
@@ -131,7 +131,7 @@ function getMyRoster() {
 }
 /* END OF PART B */
 
-/* PART C: Go through myRoster and create an array for each player that contains the dates of his team's 
+/* PART C: Go through myRoster and create an array for each player that contains the dates of his team's
 games for the week. Store all arrays in a single array myRostersGamesForCurrentWeek */
 const myRostersGamesForCurrentWeek = [];
 
@@ -198,7 +198,7 @@ function populateWeekTableHeading(firstColumnHeading) {
     "F",
     "S",
     "S",
-    "Next Week # Games"
+    "# Games next week"
   ];
   return arr;
 }
@@ -301,14 +301,13 @@ function turnDataIntoWeekHTMLTable(headingRow, tableData, tableHTMLElement) {
   }
   let table = document.createElement("table");
   let tableBody = document.createElement("tbody");
-  table.border = "1";
 
   let tr = document.createElement("tr");
   tableBody.appendChild(tr);
 
   for (let i in headingRow) {
     let th = document.createElement("th");
-    th.setAttribute("id", "col" + i);
+    th.classList.add("col" + i);
     th.appendChild(document.createTextNode(headingRow[i]));
     tr.appendChild(th);
   }
@@ -321,7 +320,8 @@ function turnDataIntoWeekHTMLTable(headingRow, tableData, tableHTMLElement) {
       td.playerIndex = i;
       if (
         getTimeStampOfCurrentWeek()[j - 2] > getTimeStampOfCurrentDay() &&
-        headingRow[0] == "My Player"
+        headingRow[0] == "My Player" &&
+        j < 9
       ) {
         td.addEventListener("click", function(e) {
           populateStatChangeData(e);
@@ -329,13 +329,28 @@ function turnDataIntoWeekHTMLTable(headingRow, tableData, tableHTMLElement) {
             statSelector.options[statSelector.selectedIndex].innerHTML
           );
         });
+
+        if (Number.isInteger(tableData[i][j])) {
+          td.classList.add("plusMinus" + tableData[i][j]);
+        }
+      } else if (j > 1 && j < 9 && Number.isInteger(tableData[i][j])) {
+        td.classList.add("pastDate");
+      } else if (
+        (j < 2 && Number.isInteger(tableData[i][j])) ||
+        (j > 8 && Number.isInteger(tableData[i][j]))
+      ) {
+        td.classList.add("matchCount" + tableData[i][j]);
       }
+
       let spanElement = document.createElement("span");
       spanElement.innerHTML = tableData[i][10];
 
       td.appendChild(document.createTextNode(tableData[i][j]));
 
-      j == 0 ? td.appendChild(spanElement) : null;
+      if (j == 0) {
+        td.appendChild(spanElement);
+        td.classList.add("dataCol0");
+      }
 
       tr.appendChild(td);
     }
@@ -351,14 +366,13 @@ function turnDataIntoStatHTMLTable(headingRow, tableData, tableHTMLElement) {
   }
   let table = document.createElement("table");
   let tableBody = document.createElement("tbody");
-  table.border = "1";
 
   let tr = document.createElement("tr");
   tableBody.appendChild(tr);
 
   for (let i in headingRow) {
     let th = document.createElement("th");
-    th.setAttribute("id", "col" + i);
+    th.classList.add("col" + i);
     th.appendChild(document.createTextNode(headingRow[i]));
     tr.appendChild(th);
   }
@@ -368,6 +382,11 @@ function turnDataIntoStatHTMLTable(headingRow, tableData, tableHTMLElement) {
     for (j = 0; j < tableData[i].length; j++) {
       let td = document.createElement("td");
       td.appendChild(document.createTextNode(tableData[i][j]));
+
+      if (j == 0) {
+        td.classList.add("dataCol0");
+      }
+
       tr.appendChild(td);
     }
     tableBody.appendChild(tr);
@@ -668,7 +687,7 @@ function updateStatChangeTable(statType) {
 /* PART K END */
 
 /* PART L: create misc HTML elements  */
-const availablePlayers = document.querySelectorAll("a.Nowrap");
+let availablePlayers = document.querySelectorAll("a.Nowrap");
 
 const comparisonBox = document.createElement("div");
 const toggleButton = document.createElement("button");
@@ -750,66 +769,82 @@ closeButton.addEventListener("click", () => {
 });
 
 const targetPlayerTable = document.createElement("div");
+targetPlayerTable.classList.add("weekTable");
 const myRosterTable = document.createElement("div");
+myRosterTable.classList.add("weekTable");
 const statChangeTable = document.createElement("div");
+statChangeTable.classList.add("statTable");
 comparisonBox.setAttribute("id", "comparisonBox");
 document.body.appendChild(comparisonBox);
+comparisonBox.appendChild(toggleButton);
+comparisonBox.appendChild(closeButton);
+comparisonBox.appendChild(document.createElement("hr"));
 comparisonBox.appendChild(targetPlayerTable);
 comparisonBox.appendChild(myRosterTable);
 comparisonBox.appendChild(statChangeTable);
-comparisonBox.appendChild(toggleButton);
-comparisonBox.appendChild(closeButton);
+comparisonBox.appendChild(document.createElement("hr"));
 
-for (element of availablePlayers) {
-  element.addEventListener("mouseover", e => {
-    let targetPlayer = e.target.textContent;
-    let targetPlayerTeam = e.target.nextElementSibling.textContent;
-    comparisonBox.style["display"] = "block";
-    populateTargetPlayerMatchupDataRow(targetPlayer, targetPlayerTeam);
-    populateDailyPlusMinusTableData(targetPlayerTeam);
+function attachEventListeners() {
+  availablePlayers = document.querySelectorAll("a.Nowrap");
+  for (element of availablePlayers) {
+    element.addEventListener("mouseover", e => {
+      let targetPlayer = e.target.textContent;
+      let targetPlayerTeam = e.target.nextElementSibling.textContent;
+      comparisonBox.style["display"] = "block";
+      populateTargetPlayerMatchupDataRow(targetPlayer, targetPlayerTeam);
+      populateDailyPlusMinusTableData(targetPlayerTeam);
 
-    if (weekTableDataChoice == null) {
-      weekTableDataChoice = dailyPlusMinusTableData;
-    } else if (weekTableDataChoice == dailyMatchupTableData) {
-      weekTableDataChoice = dailyMatchupTableData;
-    } else {
-      weekTableDataChoice = dailyPlusMinusTableData;
-    }
+      if (weekTableDataChoice == null) {
+        weekTableDataChoice = dailyPlusMinusTableData;
+      } else if (weekTableDataChoice == dailyMatchupTableData) {
+        weekTableDataChoice = dailyMatchupTableData;
+      } else {
+        weekTableDataChoice = dailyPlusMinusTableData;
+      }
 
-    filterDataForTable(
-      getSelectedPlayerIndeces(playerSelector),
-      weekTableDataChoice
-    );
-    turnDataIntoWeekHTMLTable(
-      populateWeekTableHeading("Target Player"),
-      targetPlayerMatchupDataRow,
-      targetPlayerTable
-    );
-    turnDataIntoWeekHTMLTable(
-      populateWeekTableHeading("My Player"),
-      selectedPlayerListWeekTableData,
-      myRosterTable
-    );
-    Object.keys(statChangeData).forEach(
-      statType => (statChangeData[statType] = [new Array(9).fill("-")])
-    );
-    turnDataIntoStatHTMLTable(
-      statTableHeading,
-      statChangeData.avgStatsCurrentSeason,
-      statChangeTable
-    );
+      filterDataForTable(
+        getSelectedPlayerIndeces(playerSelector),
+        weekTableDataChoice
+      );
+      turnDataIntoWeekHTMLTable(
+        populateWeekTableHeading("Target Player"),
+        targetPlayerMatchupDataRow,
+        targetPlayerTable
+      );
+      turnDataIntoWeekHTMLTable(
+        populateWeekTableHeading("My Player"),
+        selectedPlayerListWeekTableData,
+        myRosterTable
+      );
+      Object.keys(statChangeData).forEach(
+        statType => (statChangeData[statType] = [new Array(9).fill("-")])
+      );
+      turnDataIntoStatHTMLTable(
+        statTableHeading,
+        statChangeData.avgStatsCurrentSeason,
+        statChangeTable
+      );
 
-    updateTargetPlayerStatsObject(targetPlayer, targetPlayerTeam);
+      updateTargetPlayerStatsObject(targetPlayer, targetPlayerTeam);
 
-    targetPlayerGamesForCurrentWeek = getGamesInCurrentWeekForPlayer(
-      targetPlayerTeam
-    );
-  });
-
-  // element.addEventListener("mouseout", () => {
-  //   comparisonBox.style["display"] = "none";
-  // });
+      targetPlayerGamesForCurrentWeek = getGamesInCurrentWeekForPlayer(
+        targetPlayerTeam
+      );
+    });
+  }
 }
 /* PART N END  */
 
 loadDataAtPageLoad();
+attachEventListeners();
+
+/* PART O: anytime there is a change in the list of available players, reload program  */
+let currentPageURL = window.location.href;
+
+setInterval(function() {
+  if (currentPageURL != window.location.href) {
+    currentPageURL = window.location.href;
+    attachEventListeners();
+  }
+}, 1000);
+/* PART O END */
