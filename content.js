@@ -295,6 +295,8 @@ function populateDailyPlusMinusTableData(targetPlayerTeam) {
 /* PART G: when target player name is hovered, make the dailyMatchupTableData into a html table.
 Add event listener to table  */
 
+let previousSelection = null;
+
 function turnDataIntoWeekHTMLTable(headingRow, tableData, tableHTMLElement) {
   while (tableHTMLElement.hasChildNodes()) {
     tableHTMLElement.removeChild(tableHTMLElement.lastChild);
@@ -309,6 +311,12 @@ function turnDataIntoWeekHTMLTable(headingRow, tableData, tableHTMLElement) {
     let th = document.createElement("th");
     th.classList.add("col" + i);
     th.appendChild(document.createTextNode(headingRow[i]));
+    if (
+      getTimeStampOfCurrentWeek()[i - 2] < getTimeStampOfCurrentDay() &&
+      getTimeStampOfCurrentDay() < getTimeStampOfCurrentWeek()[i - 1]
+    ) {
+      th.classList.add("today");
+    }
     tr.appendChild(th);
   }
 
@@ -324,6 +332,11 @@ function turnDataIntoWeekHTMLTable(headingRow, tableData, tableHTMLElement) {
         j < 9
       ) {
         td.addEventListener("click", function(e) {
+          previousSelection
+            ? previousSelection.classList.remove("selectedCell")
+            : null;
+          e.target.classList.add("selectedCell");
+          previousSelection = e.target;
           populateStatChangeData(e);
           updateStatChangeTable(
             statSelector.options[statSelector.selectedIndex].innerHTML
@@ -340,6 +353,10 @@ function turnDataIntoWeekHTMLTable(headingRow, tableData, tableHTMLElement) {
         (j > 8 && Number.isInteger(tableData[i][j]))
       ) {
         td.classList.add("matchCount" + tableData[i][j]);
+      }
+
+      if (0 < j) {
+        td.classList.add("tableData");
       }
 
       let spanElement = document.createElement("span");
@@ -385,6 +402,18 @@ function turnDataIntoStatHTMLTable(headingRow, tableData, tableHTMLElement) {
 
       if (j == 0) {
         td.classList.add("dataCol0");
+      }
+
+      if (Number.isInteger(Math.floor(tableData[i][j]))) {
+        if (j != 8) {
+          tableData[i][j] < 0 ? td.classList.add("statLoss") : null;
+          tableData[i][j] == 0 ? td.classList.add("statNoChange") : null;
+          tableData[i][j] > 0 ? td.classList.add("statGain") : null;
+        } else {
+          tableData[i][j] < 0 ? td.classList.add("statGain") : null;
+          tableData[i][j] == 0 ? td.classList.add("statNoChange") : null;
+          tableData[i][j] > 0 ? td.classList.add("statLoss") : null;
+        }
       }
 
       tr.appendChild(td);
@@ -690,11 +719,25 @@ function updateStatChangeTable(statType) {
 let availablePlayers = document.querySelectorAll("a.Nowrap");
 
 const comparisonBox = document.createElement("div");
-const toggleButton = document.createElement("button");
-toggleButton.innerHTML = "Toggle";
-toggleButton.addEventListener("click", () => {
+
+const one = document.createElement("label");
+one.classList.add("switch");
+const two = document.createElement("input");
+two.setAttribute("type", "checkbox");
+const three = document.createElement("span");
+three.classList.add("slider");
+three.classList.add("round");
+
+one.appendChild(two);
+one.appendChild(three);
+one.addEventListener("click", () => {
   toggleTableData();
 });
+
+// const toggleButton = document.createElement("button");
+// toggleButton.innerHTML = "Toggle";
+// toggleButton.addEventListener("click", () => {
+//   toggleTableData();
 const statSelector = document.createElement("select");
 
 for (let statType of Object.keys(statChangeData)) {
@@ -759,11 +802,10 @@ function filterDataForTable(selectedPlayersIndex, tableToFilter) {
 
 let selectedPlayerListWeekTableData = null;
 
-comparisonBox.appendChild(playerSelector);
-comparisonBox.appendChild(statSelector);
-
-const closeButton = document.createElement("button");
-closeButton.innerHTML = "close";
+const closeButton = document.createElement("input");
+closeButton.setAttribute("id", "closeButton");
+closeButton.setAttribute("type", "image");
+closeButton.setAttribute("src", chrome.runtime.getURL("/close-button.png"));
 closeButton.addEventListener("click", () => {
   comparisonBox.style["display"] = "none";
 });
@@ -776,8 +818,14 @@ const statChangeTable = document.createElement("div");
 statChangeTable.classList.add("statTable");
 comparisonBox.setAttribute("id", "comparisonBox");
 document.body.appendChild(comparisonBox);
-comparisonBox.appendChild(toggleButton);
-comparisonBox.appendChild(closeButton);
+
+const headingDiv = document.createElement("div");
+headingDiv.classList.add("headingDiv");
+headingDiv.appendChild(playerSelector);
+headingDiv.appendChild(statSelector);
+headingDiv.appendChild(one);
+headingDiv.appendChild(closeButton);
+comparisonBox.appendChild(headingDiv);
 comparisonBox.appendChild(document.createElement("hr"));
 comparisonBox.appendChild(targetPlayerTable);
 comparisonBox.appendChild(myRosterTable);

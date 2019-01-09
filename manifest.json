@@ -32,5 +32,5 @@
     "https://basketball.fantasysports.yahoo.com/nba/*/players*"
   ],
 
-  "web_accessible_resources": ["/nba-2018-schedule.csv"]
+  "web_accessible_resources": ["/nba-2018-schedule.csv", "/close-button.png"]
 }

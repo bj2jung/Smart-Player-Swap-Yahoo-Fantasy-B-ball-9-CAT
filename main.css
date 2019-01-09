@@ -12,6 +12,95 @@
   font-size: 15px;
   border-radius: 0.5em;
 }
+#comparisonBox .switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+#comparisonBox .switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+#comparisonBox .slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+}
+#comparisonBox .slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+}
+#comparisonBox input:checked + .slider {
+  background-color: #2196f3;
+}
+#comparisonBox input:focus + .slider {
+  box-shadow: 0 0 1px #2196f3;
+}
+#comparisonBox input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+#comparisonBox .slider.round {
+  border-radius: 34px;
+}
+#comparisonBox .slider.round:before {
+  border-radius: 50%;
+}
+#comparisonBox th,
+#comparisonBox td {
+  table-layout: fixed;
+  border-bottom-color: #f3f2f8;
+  border-bottom-style: solid;
+  border-bottom-width: 3px;
+  border-left-color: #f3f2f8;
+  border-left-style: solid;
+  border-left-width: 3px;
+}
+#comparisonBox th {
+  text-align: center;
+  width: 75px;
+  letter-spacing: 0.08em;
+}
+#comparisonBox td {
+  padding: 0.1em;
+}
+#comparisonBox table {
+  margin: auto;
+}
+#comparisonBox hr {
+  display: block;
+  height: 1px;
+  border: 0;
+  border-top: 1px solid #7f7f7f;
+  margin: 1em 2.5em;
+  padding: 0;
+}
+#comparisonBox .headingDiv {
+  position: relative;
+}
+#comparisonBox .headingDiv #closeButton {
+  max-height: 2.3em;
+  max-width: 2.3em;
+  position: fixed;
+  right: 1em;
+  bottom: 37em;
+}
 #comparisonBox .weekTable {
   margin: 1em 2.5em;
   position: relative;
@@ -34,15 +123,6 @@
 #comparisonBox .weekTable td {
   padding: 0.1em;
   border-radius: 25px;
-}
-#comparisonBox .weekTable td .col2,
-#comparisonBox .weekTable td .col3,
-#comparisonBox .weekTable td .col4,
-#comparisonBox .weekTable td .col5,
-#comparisonBox .weekTable td .col6,
-#comparisonBox .weekTable td .col7,
-#comparisonBox .weekTable td .col8 {
-  font-size: 12px;
 }
 #comparisonBox .weekTable th,
 #comparisonBox .weekTable td {
@@ -82,13 +162,13 @@
   text-align: left;
 }
 #comparisonBox .weekTable .matchCount3 {
-  background-color: #fde581;
+  background-color: #fff1ad;
 }
 #comparisonBox .weekTable .matchCount4 {
-  background-color: #fbc600;
+  background-color: #ffe97c;
 }
 #comparisonBox .weekTable .matchCount5 {
-  background-color: #fd8b00;
+  background-color: #ffdf3f;
 }
 #comparisonBox .weekTable .pastDate {
   background-color: #f3f2f8;
@@ -101,7 +181,7 @@
   background-color: #fff;
 }
 #comparisonBox .weekTable .plusMinus0 {
-  background-color: #e4fff8;
+  background-color: #d9fcf2;
 }
 #comparisonBox .weekTable .plusMinus1 {
   background-color: #b7fbbe;
@@ -112,6 +192,15 @@
 #comparisonBox .weekTable .plusMinus3 {
   background-color: #46d272;
 }
+#comparisonBox .weekTable .selectedCell {
+  background-color: #68b1ff;
+}
+#comparisonBox .weekTable .tableData {
+  font-size: 14px;
+}
+#comparisonBox .weekTable .today {
+  background-color: #f3f2f8;
+}
 #comparisonBox .statTable {
   margin: 1em 2.5em;
   position: relative;
@@ -120,30 +209,15 @@
   padding: 0.75em 0;
   border-radius: 0.5em;
 }
-#comparisonBox .statTable th,
-#comparisonBox .statTable td {
-  table-layout: fixed;
-  border-bottom-color: #f3f2f8;
-  border-bottom-style: solid;
-  border-bottom-width: 3px;
-  border-left-color: #f3f2f8;
-  border-left-style: solid;
-  border-left-width: 3px;
-}
-#comparisonBox .statTable th {
-  text-align: center;
-  width: 75px;
-  letter-spacing: 0.08em;
-}
-#comparisonBox .statTable td {
-  padding: 0.1em;
-}
-#comparisonBox .statTable table {
-  margin: auto;
-}
 #comparisonBox .statTable .col0,
 #comparisonBox .statTable .dataCol0 {
   border-left: none;
+}
+#comparisonBox .statTable .statNoChange {
+  background-color: #d9fcf2;
+}
+#comparisonBox .statTable .statGain {
+  background-color: #b7fbbe;
 }
 
 /*# sourceMappingURL=main.css.map */
