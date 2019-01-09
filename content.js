@@ -720,25 +720,25 @@ let availablePlayers = document.querySelectorAll("a.Nowrap");
 
 const comparisonBox = document.createElement("div");
 
-const one = document.createElement("label");
-one.classList.add("switch");
-const two = document.createElement("input");
-two.setAttribute("type", "checkbox");
-const three = document.createElement("span");
-three.classList.add("slider");
-three.classList.add("round");
+const toggleSwitchOne = document.createElement("label");
+toggleSwitchOne.classList.add("switch");
+const toggleSwitchTwo = document.createElement("input");
+toggleSwitchTwo.setAttribute("type", "checkbox");
+const toggleSwitchThree = document.createElement("span");
+toggleSwitchThree.classList.add("slider");
+toggleSwitchThree.classList.add("round");
 
-one.appendChild(two);
-one.appendChild(three);
-one.addEventListener("click", () => {
+toggleSwitchOne.appendChild(toggleSwitchTwo);
+toggleSwitchOne.appendChild(toggleSwitchThree);
+toggleSwitchTwo.addEventListener("change", () => {
   toggleTableData();
 });
 
-// const toggleButton = document.createElement("button");
-// toggleButton.innerHTML = "Toggle";
-// toggleButton.addEventListener("click", () => {
-//   toggleTableData();
+const statSelectorDiv = document.createElement("div");
+statSelectorDiv.setAttribute("id", "statSelector");
+
 const statSelector = document.createElement("select");
+statSelectorDiv.appendChild(statSelector);
 
 for (let statType of Object.keys(statChangeData)) {
   const statOption = document.createElement("option");
@@ -754,8 +754,11 @@ statSelector.addEventListener("change", () =>
 /* PART L END */
 
 /* PART M: create HTML select multiple element to allow user to choose which players from myRoster are to be compared */
+const playerSelectorDiv = document.createElement("div");
+playerSelectorDiv.setAttribute("id", "playerSelector");
 const playerSelector = document.createElement("select");
 playerSelector.multiple = true;
+playerSelectorDiv.appendChild(playerSelector);
 
 function populatePlayerListDropDown() {
   for (let player of myRoster[0]) {
@@ -805,7 +808,10 @@ let selectedPlayerListWeekTableData = null;
 const closeButton = document.createElement("input");
 closeButton.setAttribute("id", "closeButton");
 closeButton.setAttribute("type", "image");
-closeButton.setAttribute("src", chrome.runtime.getURL("/close-button.png"));
+closeButton.setAttribute(
+  "src",
+  chrome.runtime.getURL("/images/close-button.png")
+);
 closeButton.addEventListener("click", () => {
   comparisonBox.style["display"] = "none";
 });
@@ -821,9 +827,9 @@ document.body.appendChild(comparisonBox);
 
 const headingDiv = document.createElement("div");
 headingDiv.classList.add("headingDiv");
-headingDiv.appendChild(playerSelector);
-headingDiv.appendChild(statSelector);
-headingDiv.appendChild(one);
+headingDiv.appendChild(playerSelectorDiv);
+headingDiv.appendChild(statSelectorDiv);
+headingDiv.appendChild(toggleSwitchOne);
 headingDiv.appendChild(closeButton);
 comparisonBox.appendChild(headingDiv);
 comparisonBox.appendChild(document.createElement("hr"));
@@ -878,6 +884,9 @@ function attachEventListeners() {
       targetPlayerGamesForCurrentWeek = getGamesInCurrentWeekForPlayer(
         targetPlayerTeam
       );
+
+      tail.select(playerSelector, { placeholder: "Select Player(s)" });
+      tail.select(statSelector, {});
     });
   }
 }

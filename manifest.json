@@ -22,8 +22,8 @@
   "content_scripts": [
     {
       "matches": ["https://basketball.fantasysports.yahoo.com/nba/*/players*"],
-      "js": ["content.js"],
-      "css": ["main.css"]
+      "js": ["/tail.select/tail.select.min.js", "content.js"],
+      "css": ["/tail.select/tail.select-modern.css", "main.css"]
     }
   ],
 
@@ -32,5 +32,8 @@
     "https://basketball.fantasysports.yahoo.com/nba/*/players*"
   ],
 
-  "web_accessible_resources": ["/nba-2018-schedule.csv", "/close-button.png"]
+  "web_accessible_resources": [
+    "/nba-2018-schedule.csv",
+    "/images/close-button.png"
+  ]
 }

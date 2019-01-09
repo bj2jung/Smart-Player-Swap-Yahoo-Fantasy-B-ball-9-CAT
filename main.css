@@ -31,7 +31,6 @@
   right: 0;
   bottom: 0;
   background-color: #ccc;
-  -webkit-transition: 0.4s;
   transition: 0.4s;
 }
 #comparisonBox .slider:before {
@@ -42,7 +41,6 @@
   left: 4px;
   bottom: 4px;
   background-color: white;
-  -webkit-transition: 0.4s;
   transition: 0.4s;
 }
 #comparisonBox input:checked + .slider {
@@ -52,8 +50,6 @@
   box-shadow: 0 0 1px #2196f3;
 }
 #comparisonBox input:checked + .slider:before {
-  -webkit-transform: translateX(26px);
-  -ms-transform: translateX(26px);
   transform: translateX(26px);
 }
 #comparisonBox .slider.round {
@@ -93,6 +89,8 @@
 }
 #comparisonBox .headingDiv {
   position: relative;
+  display: grid;
+  grid-template-columns: 40% 40% 20%;
 }
 #comparisonBox .headingDiv #closeButton {
   max-height: 2.3em;
@@ -100,6 +98,11 @@
   position: fixed;
   right: 1em;
   bottom: 37em;
+}
+#comparisonBox .headingDiv #playerSelector,
+#comparisonBox .headingDiv #statSelector {
+  margin: 2em;
+  right: 50px;
 }
 #comparisonBox .weekTable {
   margin: 1em 2.5em;
