@@ -34,6 +34,7 @@
 
   "web_accessible_resources": [
     "/nba-2018-schedule.csv",
-    "/images/close-button.png"
+    "/images/close-button.png",
+    "/images/app-image.png"
   ]
 }

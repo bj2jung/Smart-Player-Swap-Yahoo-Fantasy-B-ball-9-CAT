@@ -17,6 +17,7 @@
   display: inline-block;
   width: 60px;
   height: 34px;
+  margin: 2em;
 }
 #comparisonBox .switch input {
   opacity: 0;
@@ -30,7 +31,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #ccc;
+  background-color: #2196f3;
   transition: 0.4s;
 }
 #comparisonBox .slider:before {
@@ -42,9 +43,6 @@
   bottom: 4px;
   background-color: white;
   transition: 0.4s;
-}
-#comparisonBox input:checked + .slider {
-  background-color: #2196f3;
 }
 #comparisonBox input:focus + .slider {
   box-shadow: 0 0 1px #2196f3;
@@ -88,20 +86,25 @@
   padding: 0;
 }
 #comparisonBox .headingDiv {
+  background: linear-gradient(rgba(243, 242, 248, 0.75), rgba(243, 242, 248, 0.9)), url("http://a.espncdn.com/combiner/i?img=/i/headshots/nba/players/full/3112335.png&w=350&h=254");
+  background-position-x: center;
+  background-size: 20%;
+}
+#comparisonBox .headingDiv .headingGridDiv {
   position: relative;
   display: grid;
-  grid-template-columns: 40% 40% 20%;
+  grid-template-columns: 33% 33% 30% 4%;
 }
-#comparisonBox .headingDiv #closeButton {
+#comparisonBox .headingDiv .headingGridDiv #closeButton {
   max-height: 2.3em;
   max-width: 2.3em;
-  position: fixed;
-  right: 1em;
-  bottom: 37em;
 }
-#comparisonBox .headingDiv #playerSelector,
-#comparisonBox .headingDiv #statSelector {
-  margin: 2em;
+#comparisonBox .headingDiv .headingGridDiv #appImage {
+  max-height: 7em;
+}
+#comparisonBox .headingDiv .headingGridDiv #playerSelector,
+#comparisonBox .headingDiv .headingGridDiv #statSelector {
+  margin: 1em;
   right: 50px;
 }
 #comparisonBox .weekTable {
@@ -125,7 +128,6 @@
 }
 #comparisonBox .weekTable td {
   padding: 0.1em;
-  border-radius: 25px;
 }
 #comparisonBox .weekTable th,
 #comparisonBox .weekTable td {
@@ -198,7 +200,7 @@
 #comparisonBox .weekTable .selectedCell {
   background-color: #68b1ff;
 }
-#comparisonBox .weekTable .tableData {
+#comparisonBox .weekTable .tableDataOne {
   font-size: 14px;
 }
 #comparisonBox .weekTable .today {

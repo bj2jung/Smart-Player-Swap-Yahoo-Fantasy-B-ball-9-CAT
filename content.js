@@ -356,7 +356,11 @@ function turnDataIntoWeekHTMLTable(headingRow, tableData, tableHTMLElement) {
       }
 
       if (0 < j) {
-        td.classList.add("tableData");
+        td.classList.add("tableDataOne");
+      }
+
+      if (1 < j && j < 9) {
+        td.classList.add("tableDataTwo");
       }
 
       let spanElement = document.createElement("span");
@@ -825,12 +829,23 @@ statChangeTable.classList.add("statTable");
 comparisonBox.setAttribute("id", "comparisonBox");
 document.body.appendChild(comparisonBox);
 
+const selectors = document.createElement("div");
+selectors.appendChild(playerSelectorDiv);
+selectors.appendChild(statSelectorDiv);
+
+const appImage = document.createElement("img");
+appImage.setAttribute("id", "appImage");
+appImage.setAttribute("src", chrome.runtime.getURL("/images/app-image.png"));
+
 const headingDiv = document.createElement("div");
 headingDiv.classList.add("headingDiv");
-headingDiv.appendChild(playerSelectorDiv);
-headingDiv.appendChild(statSelectorDiv);
-headingDiv.appendChild(toggleSwitchOne);
-headingDiv.appendChild(closeButton);
+const headingGridDiv = document.createElement("div");
+headingGridDiv.classList.add("headingGridDiv");
+headingGridDiv.appendChild(appImage);
+headingGridDiv.appendChild(selectors);
+headingGridDiv.appendChild(toggleSwitchOne);
+headingGridDiv.appendChild(closeButton);
+headingDiv.appendChild(headingGridDiv);
 comparisonBox.appendChild(headingDiv);
 comparisonBox.appendChild(document.createElement("hr"));
 comparisonBox.appendChild(targetPlayerTable);
