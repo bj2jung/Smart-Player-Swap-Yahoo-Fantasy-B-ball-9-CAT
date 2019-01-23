@@ -51,14 +51,14 @@ function getTimeStampOfCurrentWeek() {
     Math.floor(date / 604800000 + 0.399) * 604800000 - 241200000;
   return [
     mondayTimeStamp, //monday
-    mondayTimeStamp + 86400000, //tues
-    mondayTimeStamp + 172800000, //wed
-    mondayTimeStamp + 259200000, //thurs
-    mondayTimeStamp + 345600000, //fri
-    mondayTimeStamp + 432000000, //sat
-    mondayTimeStamp + 518400000, //sun
-    mondayTimeStamp + 604800000, //mon
-    mondayTimeStamp + 1209600000 //mon
+    mondayTimeStamp + 86400000, //tuesday
+    mondayTimeStamp + 172800000, //wedday
+    mondayTimeStamp + 259200000, //thursday
+    mondayTimeStamp + 345600000, //friday
+    mondayTimeStamp + 432000000, //satday
+    mondayTimeStamp + 518400000, //sunday
+    mondayTimeStamp + 604800000, //next monday
+    mondayTimeStamp + 1209600000 //following monday
   ];
 }
 
@@ -326,6 +326,17 @@ function turnDataIntoWeekHTMLTable(headingRow, tableData, tableHTMLElement) {
       let td = document.createElement("td");
       td.dayIndex = j;
       td.playerIndex = i;
+
+      if (
+        selectedCellCoordinates &&
+        j == selectedCellCoordinates[0] &&
+        i == selectedCellCoordinates[1] &&
+        headingRow[0] == "My Player"
+      ) {
+        previousSelection = td;
+        td.classList.add("selectedCell");
+      }
+
       if (
         getTimeStampOfCurrentWeek()[j - 2] > getTimeStampOfCurrentDay() &&
         headingRow[0] == "My Player" &&
@@ -337,6 +348,9 @@ function turnDataIntoWeekHTMLTable(headingRow, tableData, tableHTMLElement) {
             : null;
           e.target.classList.add("selectedCell");
           previousSelection = e.target;
+
+          selectedCellCoordinates = [td.dayIndex, td.playerIndex];
+
           populateStatChangeData(e);
           updateStatChangeTable(
             statSelector.options[statSelector.selectedIndex].innerHTML
@@ -464,6 +478,11 @@ function toggleTableData() {
     weekTableDataChoice = dailyPlusMinusTableData;
   }
 }
+
+//////
+let selectedCellCoordinates = null;
+
+//////
 
 /* END OF PART H */
 
@@ -902,6 +921,11 @@ function attachEventListeners() {
 
       tail.select(playerSelector, { placeholder: "Select Player(s)" });
       tail.select(statSelector, {});
+
+      previousSelection
+        ? previousSelection.classList.remove("selectedCell")
+        : null;
+      previousSelection = null;
     });
   }
 }

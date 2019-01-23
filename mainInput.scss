@@ -1,0 +1,268 @@
+$background-color: #f3f2f8;
+$light-color: #fff;
+$dark-color: #7f7f7f;
+$border-width: 3px;
+$good-color-green-1: #d9fcf2;
+$good-color-green-2: #b7fbbe;
+$good-color-green-3: #90e9a7;
+$good-color-green-4: #46d272;
+$good-color-orange-1: #fff1ad;
+$good-color-orange-2: #ffe97c;
+$good-color-orange-3: #ffdf3f;
+// $good-color-orange-4: #fde581;
+
+#comparisonBox {
+  display: none;
+  position: fixed;
+  z-index: 2;
+  left: 50%;
+  top: 40%;
+  bottom: 10%;
+  right: 0;
+  overflow: auto;
+  background-color: $background-color;
+  color: #000000;
+  font-size: 15px;
+  border-radius: 0.5em;
+
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+    margin: 2em;
+  }
+
+  .switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #2196f3;
+    transition: 0.4s;
+  }
+
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: 0.4s;
+  }
+
+  input:focus + .slider {
+    box-shadow: 0 0 1px #2196f3;
+  }
+
+  input:checked + .slider:before {
+    transform: translateX(26px);
+  }
+
+  .slider.round {
+    border-radius: 34px;
+  }
+
+  .slider.round:before {
+    border-radius: 50%;
+  }
+
+  th,
+  td {
+    table-layout: fixed;
+    border-bottom-color: $background-color;
+    border-bottom-style: solid;
+    border-bottom-width: $border-width;
+    border-left-color: $background-color;
+    border-left-style: solid;
+    border-left-width: $border-width;
+  }
+  th {
+    text-align: center;
+    width: 75px;
+    letter-spacing: 0.08em;
+  }
+  td {
+    padding: 0.1em;
+  }
+  table {
+    margin: auto;
+  }
+  hr {
+    display: block;
+    height: 1px;
+    border: 0;
+    border-top: 1px solid #7f7f7f;
+    margin: 1em 2.5em;
+    padding: 0;
+  }
+
+  .headingDiv {
+    background: linear-gradient(
+        rgba($background-color, 0.75),
+        rgba($background-color, 0.9)
+      ),
+      url("http://a.espncdn.com/combiner/i?img=/i/headshots/nba/players/full/3112335.png&w=350&h=254");
+    background-position-x: center;
+    background-size: 20%;
+
+    .headingGridDiv {
+      position: relative;
+      display: grid;
+      grid-template-columns: 33% 33% 30% 4%;
+      #closeButton {
+        max-height: 2.3em;
+        max-width: 2.3em;
+      }
+      #appImage {
+        max-height: 115px;
+      }
+      #playerSelector,
+      #statSelector {
+        margin: 1em;
+        right: 50px;
+      }
+    }
+  }
+
+  .weekTable {
+    margin: 1em 2.5em;
+    position: relative;
+    background-color: $light-color;
+    padding: 0.75em 0;
+    width: auto;
+    box-sizing: border-box;
+    border-radius: 0.5em;
+    // font-size: 14px;
+    table {
+      margin: auto;
+    }
+
+    th {
+      text-align: center;
+      padding-bottom: 0.3em;
+      text-transform: uppercase;
+      font-size: 13px;
+      letter-spacing: 0.08em;
+    }
+
+    td {
+      padding: 0.1em;
+    }
+
+    th,
+    td {
+      table-layout: fixed;
+      border-bottom-color: $background-color;
+      border-bottom-style: solid;
+      border-bottom-width: $border-width;
+      border-left-color: $background-color;
+      border-left-style: solid;
+      border-left-width: $border-width;
+    }
+    span {
+      font-size: 12px;
+      padding-left: 5px;
+    }
+
+    .col0,
+    .dataCol0 {
+      width: 15em;
+      border-left: none;
+    }
+
+    .col1 {
+      width: 6em;
+    }
+
+    .col2,
+    .col3,
+    .col4,
+    .col5,
+    .col6,
+    .col7,
+    .col8 {
+      width: 50px;
+    }
+    .col9 {
+      width: 90px;
+    }
+    .dataCol0 {
+      text-align: left;
+    }
+
+    .matchCount3 {
+      background-color: $good-color-orange-1;
+    }
+    .matchCount4 {
+      background-color: $good-color-orange-2;
+    }
+    .matchCount5 {
+      background-color: $good-color-orange-3;
+    }
+
+    .pastDate {
+      background-color: $background-color;
+    }
+
+    .plusMinus-5,
+    .plusMinus-4,
+    .plusMinus-3,
+    .plusMinus-2,
+    .plusMinus-1 {
+      background-color: $light-color;
+    }
+    .plusMinus0 {
+      background-color: $good-color-green-1;
+    }
+    .plusMinus1 {
+      background-color: $good-color-green-2;
+    }
+    .plusMinus2 {
+      background-color: $good-color-green-3;
+    }
+    .plusMinus3 {
+      background-color: $good-color-green-4;
+    }
+    .selectedCell {
+      background-color: #68b1ff;
+    }
+    .tableDataOne {
+      font-size: 14px;
+    }
+    .today {
+      background-color: $background-color;
+    }
+  }
+
+  .statTable {
+    margin: 1em 2.5em;
+    position: relative;
+    background-color: $light-color;
+    width: auto;
+    padding: 0.75em 0;
+    border-radius: 0.5em;
+
+    .col0,
+    .dataCol0 {
+      border-left: none;
+    }
+
+    .statNoChange {
+      background-color: $good-color-green-1;
+    }
+    .statGain {
+      background-color: $good-color-green-2;
+    }
+  }
+}
