@@ -24,13 +24,16 @@ $good-color-orange-3: #ffdf3f;
   color: #000000;
   font-size: 15px;
   border-radius: 0.5em;
+  border-style: solid;
+  border-color: $dark-color;
+  border-width: 2px;
 
   .switch {
     position: relative;
     display: inline-block;
     width: 60px;
     height: 34px;
-    margin: 2em;
+    margin: auto;
   }
 
   .switch input {
@@ -119,13 +122,16 @@ $good-color-orange-3: #ffdf3f;
     .headingGridDiv {
       position: relative;
       display: grid;
-      grid-template-columns: 33% 33% 30% 4%;
+      grid-template-columns: 4% 32% 32% 32%;
       #closeButton {
-        max-height: 2.3em;
+        max-height: 115px;
         max-width: 2.3em;
       }
       #appImage {
         max-height: 115px;
+        opacity: 0.8;
+        filter: grayscale(100%);
+        margin: auto;
       }
       #playerSelector,
       #statSelector {
@@ -264,5 +270,10 @@ $good-color-orange-3: #ffdf3f;
     .statGain {
       background-color: $good-color-green-2;
     }
+  }
+
+  .footingDiv {
+    font-size: 10px;
+    margin-bottom: 1em;
   }
 }

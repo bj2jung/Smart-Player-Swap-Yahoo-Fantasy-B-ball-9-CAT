@@ -8,6 +8,7 @@ async function loadDataAtPageLoad() {
   populateDailyMatchupTableData();
   updateMyRosterStatsObject();
   populatePlayerListDropDown();
+  attachEventListeners();
 }
 
 /* PART A: Fetch game schedule csv file, populate gameScheduleArray with all games for the season,
@@ -360,7 +361,13 @@ function turnDataIntoWeekHTMLTable(headingRow, tableData, tableHTMLElement) {
         if (Number.isInteger(tableData[i][j])) {
           td.classList.add("plusMinus" + tableData[i][j]);
         }
-      } else if (j > 1 && j < 9 && Number.isInteger(tableData[i][j])) {
+      } else if (
+        getTimeStampOfCurrentWeek()[j - 2] < getTimeStampOfCurrentDay() &&
+        headingRow[0] == "Target Player" &&
+        j < 9
+      ) {
+        td.classList.add("pastDate");
+      } else if (j > 1 && j < 9 && headingRow[0] == "My Player") {
         td.classList.add("pastDate");
       } else if (
         (j < 2 && Number.isInteger(tableData[i][j])) ||
@@ -860,10 +867,10 @@ const headingDiv = document.createElement("div");
 headingDiv.classList.add("headingDiv");
 const headingGridDiv = document.createElement("div");
 headingGridDiv.classList.add("headingGridDiv");
+headingGridDiv.appendChild(closeButton);
 headingGridDiv.appendChild(appImage);
 headingGridDiv.appendChild(selectors);
 headingGridDiv.appendChild(toggleSwitchOne);
-headingGridDiv.appendChild(closeButton);
 headingDiv.appendChild(headingGridDiv);
 comparisonBox.appendChild(headingDiv);
 comparisonBox.appendChild(document.createElement("hr"));
@@ -871,6 +878,11 @@ comparisonBox.appendChild(targetPlayerTable);
 comparisonBox.appendChild(myRosterTable);
 comparisonBox.appendChild(statChangeTable);
 comparisonBox.appendChild(document.createElement("hr"));
+const footingDiv = document.createElement("div");
+footingDiv.classList.add("footingDiv");
+footingDiv.textContent =
+  "https://github.com/bj2jung/Yahoo-Fantasy-Basketball-Player-Comparison-Chrome-Extension";
+comparisonBox.appendChild(footingDiv);
 
 function attachEventListeners() {
   availablePlayers = document.querySelectorAll("a.Nowrap");
@@ -919,20 +931,22 @@ function attachEventListeners() {
         targetPlayerTeam
       );
 
-      tail.select(playerSelector, { placeholder: "Select Player(s)" });
+      tail.select(playerSelector, {
+        placeholder: "Select Player(s) from Roster"
+      });
       tail.select(statSelector, {});
 
       previousSelection
         ? previousSelection.classList.remove("selectedCell")
         : null;
       previousSelection = null;
+      selectedCellCoordinates = null;
     });
   }
 }
 /* PART N END  */
 
 loadDataAtPageLoad();
-attachEventListeners();
 
 /* PART O: anytime there is a change in the list of available players, reload program  */
 let currentPageURL = window.location.href;

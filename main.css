@@ -11,13 +11,16 @@
   color: #000000;
   font-size: 15px;
   border-radius: 0.5em;
+  border-style: solid;
+  border-color: #7f7f7f;
+  border-width: 2px;
 }
 #comparisonBox .switch {
   position: relative;
   display: inline-block;
   width: 60px;
   height: 34px;
-  margin: 2em;
+  margin: auto;
 }
 #comparisonBox .switch input {
   opacity: 0;
@@ -93,14 +96,17 @@
 #comparisonBox .headingDiv .headingGridDiv {
   position: relative;
   display: grid;
-  grid-template-columns: 33% 33% 30% 4%;
+  grid-template-columns: 4% 32% 32% 32%;
 }
 #comparisonBox .headingDiv .headingGridDiv #closeButton {
-  max-height: 2.3em;
+  max-height: 115px;
   max-width: 2.3em;
 }
 #comparisonBox .headingDiv .headingGridDiv #appImage {
   max-height: 115px;
+  opacity: 0.8;
+  filter: grayscale(100%);
+  margin: auto;
 }
 #comparisonBox .headingDiv .headingGridDiv #playerSelector,
 #comparisonBox .headingDiv .headingGridDiv #statSelector {
@@ -223,6 +229,10 @@
 }
 #comparisonBox .statTable .statGain {
   background-color: #b7fbbe;
+}
+#comparisonBox .footingDiv {
+  font-size: 10px;
+  margin-bottom: 1em;
 }
 
 /*# sourceMappingURL=main.css.map */
