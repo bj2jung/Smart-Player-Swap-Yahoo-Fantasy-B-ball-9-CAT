@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
-  "name": "Fantasy Basketball Player Comparison",
-  "version": "1.0",
-  "description": "Fantasy Basketball Player Comparison",
+  "name": "Smart Player Swap: Yahoo Fantasy B-ball 9CAT",
+  "version": "1.2",
+  "description": "Player comparison tool to check number of games gained/lost and projected stat gain/loss.",
   "icons": {
     "128": "/images/icon128.png",
     "48": "/images/icon48.png",
@@ -11,7 +11,7 @@
   "page_action": {
     "default_icon": "/images/icon16.png",
     "default_popup": "popup.html",
-    "default_title": "Fantasy Basketball Player Comparison"
+    "default_title": "Yahoo Fantasy Basketball 9-Category Player Comparison Tool"
   },
 
   "background": {
@@ -21,15 +21,18 @@
 
   "content_scripts": [
     {
-      "matches": ["https://basketball.fantasysports.yahoo.com/nba/*/players*"],
+      "matches": [
+        "https://basketball.fantasysports.yahoo.com/nba/*/players*",
+        "https://basketball.fantasysports.yahoo.com/nba/*/*"
+      ],
       "js": ["/tail.select/tail.select.min.js", "content.js"],
       "css": ["/tail.select/tail.select-modern.css", "main.css"]
     }
   ],
 
   "permissions": [
-    "tabs",
-    "https://basketball.fantasysports.yahoo.com/nba/*/players*"
+    "https://basketball.fantasysports.yahoo.com/nba/*/players*",
+    "https://basketball.fantasysports.yahoo.com/nba/*/*"
   ],
 
   "web_accessible_resources": [

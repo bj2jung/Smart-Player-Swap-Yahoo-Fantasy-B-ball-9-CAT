@@ -12,7 +12,7 @@ async function loadDataAtPageLoad() {
 }
 
 /* PART A: Fetch game schedule csv file, populate gameScheduleArray with all games for the season,
-populate currentWeekGameScheduleArray with games that occur in the current week (Monday thru Sunday) */
+populate currentWeekGameScheduleArray with games that occur in the current week (Monday thru Sunday) and nextWeekGameScheduleArray for following week  */
 
 const gameScheduleArray = [[], [], []];
 const currentWeekGameScheduleArray = [[], [], []];
@@ -93,7 +93,7 @@ function populateNextWeekGameScheduleArray(week) {
     indexOfSundayLastGame =
       newGameScheduleArray.indexOf(week[8] + 86400000) - 1;
   }
-  for (i = indexOfMondayFirstGame; i <= indexOfSundayLastGame; i++) {
+  for (let i = indexOfMondayFirstGame; i <= indexOfSundayLastGame; i++) {
     nextWeekGameScheduleArray[0].push(newGameScheduleArray[i]);
     nextWeekGameScheduleArray[1].push(gameScheduleArray[1][i]);
     nextWeekGameScheduleArray[2].push(gameScheduleArray[2][i]);
@@ -104,31 +104,29 @@ function populateNextWeekGameScheduleArray(week) {
 
 /* PART B: Collect list of players on my Roster and populate myRoster */
 const leagueID = window.location.href.split("/")[4];
+
 const myRoster = [[], []];
 function getMyRoster() {
-  return new Promise(resolve => {
-    fetch(`https://basketball.fantasysports.yahoo.com/nba/${leagueID}/4`)
-      .then(response => response.text())
-      .then(text => {
-        const parser = new DOMParser();
-        const htmlDocument = parser.parseFromString(text, "text/html");
-        if (myRoster[0].length === 0) {
-          for (let i = 1; i < 16; i++) {
-            let playerOnMyRoster = htmlDocument.documentElement.querySelector(
-              `#statTable0 > tbody > tr:nth-child(${i}) > td.Alt.Ta-start.player.Fz-xs.Bdrend > div > div:nth-child(1) > div > a`
-            );
-            let playerTeam = htmlDocument.documentElement.querySelector(
-              `#statTable0 > tbody > tr:nth-child(${i}) > td.Alt.Ta-start.player.Fz-xs.Bdrend > div > div:nth-child(1) > div > span`
-            );
-            playerOnMyRoster
-              ? myRoster[0].push(playerOnMyRoster.innerText)
-              : null;
-            playerTeam ? myRoster[1].push(playerTeam.innerText) : null;
-          }
+  return fetch(`https://basketball.fantasysports.yahoo.com/nba/${leagueID}/4`)
+    .then(response => response.text())
+    .then(text => {
+      const parser = new DOMParser();
+      const htmlDocument = parser.parseFromString(text, "text/html");
+      if (myRoster[0].length === 0) {
+        for (let i = 1; i < 16; i++) {
+          let playerOnMyRoster = htmlDocument.documentElement.querySelector(
+            `#statTable0 > tbody > tr:nth-child(${i}) > td.Alt.Ta-start.player.Fz-xs.Bdrend > div > div:nth-child(1) > div > a`
+          );
+          let playerTeam = htmlDocument.documentElement.querySelector(
+            `#statTable0 > tbody > tr:nth-child(${i}) > td.Alt.Ta-start.player.Fz-xs.Bdrend > div > div:nth-child(1) > div > span`
+          );
+          playerOnMyRoster
+            ? myRoster[0].push(playerOnMyRoster.innerText)
+            : null;
+          playerTeam ? myRoster[1].push(playerTeam.innerText) : null;
         }
-      })
-      .then(() => resolve());
-  });
+      }
+    });
 }
 /* END OF PART B */
 
