@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
-  "name": "Smart Player Swap: Yahoo Fantasy B-ball 9CAT",
-  "version": "1.2",
+  "name": "Smart Player Swap: Yahoo Fantasy B-ball 9-CAT",
+  "version": "1.5",
   "description": "Player comparison tool to check number of games gained/lost and projected stat gain/loss.",
   "icons": {
     "128": "/images/icon128.png",
