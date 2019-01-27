@@ -14,9 +14,7 @@ $good-color-orange-3: #ffdf3f;
 #comparisonBox {
   display: none;
   position: fixed;
-  z-index: 2;
-  left: 50%;
-  top: 40%;
+  z-index: 20000;
   bottom: 10%;
   right: 0;
   overflow: auto;
@@ -27,7 +25,10 @@ $good-color-orange-3: #ffdf3f;
   border-style: solid;
   border-color: $dark-color;
   border-width: 2px;
+  max-height: 500px;
   min-height: 475px;
+  max-width: 950px;
+  min-width: 950px;
 
   .switch {
     position: relative;

@@ -1,9 +1,7 @@
 #comparisonBox {
   display: none;
   position: fixed;
-  z-index: 2;
-  left: 50%;
-  top: 40%;
+  z-index: 20000;
   bottom: 10%;
   right: 0;
   overflow: auto;
@@ -14,7 +12,10 @@
   border-style: solid;
   border-color: #7f7f7f;
   border-width: 2px;
+  max-height: 500px;
   min-height: 475px;
+  max-width: 950px;
+  min-width: 950px;
 }
 #comparisonBox .switch {
   position: relative;
