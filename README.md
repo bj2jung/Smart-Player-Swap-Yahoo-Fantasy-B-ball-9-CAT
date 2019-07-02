@@ -8,16 +8,20 @@
 
 ![alt text](how-to-use.png)
 
-Link to chrome web store page: https://chrome.google.com/webstore/detail/dgipljpilhcifdfejhgapkemciknebja
+## Links ##
 
-Link to youtube demo: https://www.youtube.com/watch?v=4FYaveDPgi0&
+Chrome web store page: https://chrome.google.com/webstore/detail/dgipljpilhcifdfejhgapkemciknebja
 
+Youtube in-depth demo: https://www.youtube.com/watch?v=4FYaveDPgi0&
 
+## Information ##
 
-- Quickly determine number of games gained/lost in current week, if a certain player is added to my roster in place of a player in my roster.
+Chrome Extension that provides a UI for Yahoo Fantasy Basketball users. Using the UI, users can easily compare the value of different players.
 
-- Quickly view current week opponents for my players.
+### Features ###
+
+- View my players' current week games.
+
+- Easily determine the best time to make a swap in roster.
 
 - Using average statistics, quickly view projected stat gain/loss.
-
-- Click the icon (top right corner of browser) after installation for details.
