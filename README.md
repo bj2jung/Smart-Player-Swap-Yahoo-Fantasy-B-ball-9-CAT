@@ -1,3 +1,6 @@
+# Smart Player Swap - Yahoo Fantasy Basketball
+
+
 ![](sample.gif)
 
 ![alt text](how-to-use.png)
